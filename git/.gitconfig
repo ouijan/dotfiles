@@ -1,0 +1,10 @@
+[user]
+	email = tobyharris93@gmail.com
+	name = tharris
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[init]
+	defaultBranch = main
