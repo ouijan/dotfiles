@@ -1,0 +1,5 @@
+require("config.set")
+require("config.ouijan")
+require("config.lazy")
+require("config.keybinds")
+require("config.commands")
