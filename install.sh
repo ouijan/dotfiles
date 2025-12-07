@@ -1,10 +1,18 @@
 #!/bin/bash
 
+log_header() {
+cat << EOF
+------------------------------------------------------
+    $1
+------------------------------------------------------
+EOF
+}
+
 # ------------------------------------------------------
 # MacOS packages 
 # ------------------------------------------------------
 if command -v brew &> /dev/null; then
-    echo "Installing MacOS packages."
+    log_header "Installing MacOS packages"
     brew install \
         zsh \
         git \
@@ -24,8 +32,8 @@ fi
 # Arch Linux packages 
 # ------------------------------------------------------
 if command -v pacman >/dev/null 2>&1; then
-    echo "Installing Arch packages."
-    pacman -S --needed \
+    log_header "Installing Arch Linux packages"
+    sudo pacman -S --needed \
         zsh \
         git \
         curl \
@@ -43,6 +51,8 @@ fi
 # ------------------------------------------------------
 # Univeral setup
 # ------------------------------------------------------
+log_header "Univeral setup"
+
 # Install Oh My Zsh 
 if [ -d "$HOME/.oh-my-zsh" ]; then
     echo "Oh My Zsh already installed."
