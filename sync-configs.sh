@@ -13,9 +13,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 # Linux
-# if [[ "$OSTYPE" == "darwin"* ]]; then
-#     stow -R -v hypr waybar ghostty
-# fi
+if [[ "$OSTYPE" == "linux"* ]]; then
+    stow -R -v hypr waybar ghostty
+fi
 
 # Platform agnostic
 stow -R -v git nvim tmux zsh lazygit

@@ -127,8 +127,8 @@ return {
 		defaults = {
 			-- 	formatter = "path.filename_first",
 			winopts = {
-				height = 0.98,
-				width = 0.98,
+				height = 1,
+				width = 1,
 			},
 		},
 		winopts = {

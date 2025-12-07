@@ -4,6 +4,7 @@ return {
 	priority = 1000,
 	opts = {
 		auto_integrations = true,
+		transparent_background = true,
 	},
 	config = function(_, opts)
 		require("catppuccin").setup(opts)
