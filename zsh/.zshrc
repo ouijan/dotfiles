@@ -30,6 +30,7 @@ plugins=(
     zsh-syntax-highlighting
     zsh-autosuggestions
     fzf-tab
+    nvm
 )
 
 # zsh-completions - https://github.com/zsh-users/zsh-completions
@@ -56,6 +57,18 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # -----------------------------------------------
+# Completion settings
+# -----------------------------------------------
+zstyle ':completion:*:git-checkout:*' sort false
+zstyle ':completion:*:descriptions' format '[%d]'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:*' switch-group '<' '>'
+# zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
+# -----------------------------------------------
 # Key bindings
 # -----------------------------------------------
 bindkey '^y' autosuggest-accept
@@ -77,12 +90,6 @@ alias lt="eza -TL 2 --icons"
 # Git aliases
 alias lg="lazygit"
 
-# -----------------------------------------------
-# Misc settings
-# -----------------------------------------------
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # -----------------------------------------------
 # CLI tools

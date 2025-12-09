@@ -26,7 +26,10 @@ if command -v brew &> /dev/null; then
         tealdeer \
         eza \
         fzf \
-        bitwarden
+        bitwarden \ 
+        gpg \
+        pass
+
 fi
 
 # ------------------------------------------------------
@@ -34,7 +37,7 @@ fi
 # ------------------------------------------------------
 if command -v pacman >/dev/null 2>&1; then
     log_header "Installing Arch Linux packages"
-    sudo cachyos-rate-mirrors
+    # sudo cachyos-rate-mirrors
     sudo pacman -Syu \
         zsh \
         git \
@@ -47,7 +50,9 @@ if command -v pacman >/dev/null 2>&1; then
         zoxide \
         tealdeer \
         eza \
-        fzf
+        fzf \
+        gpg \
+        pass
 fi
 
 # ------------------------------------------------------
