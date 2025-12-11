@@ -16,11 +16,10 @@ if [[ -z "$target_branch" ]]; then
     exit 1
 fi
 
-
 # Generate pull request description using Gemini AI
 prompt="Write a concise pull request description for these changes. Be sure to include the purpose of the changes and any relevant context. Fill out the @.github/pull_request_template.md template as appropriate. \n $(git diff $target_remote_branch)"
-initial_body=$(echo "$prompt" | gemini)
-# initial_body="test pr body"
+gemini_response=$(echo "$prompt" | gemini --format json)
+initial_body=$(echo "$gemini_response" | jq -r '.response')
 
 # Open the editor for user to edit the PR description
 temp_file=$(mktemp) # Create a temporary file
@@ -29,14 +28,12 @@ echo "$initial_body" > "$temp_file" # Write initial body to temp file
 nvim "$temp_file" < /dev/tty # Open nvim for editing
 final_body=$(cat "$temp_file") # Read the edited content
 
+# Create the pull request using GitHub CLI
+pr_url=$(gh pr create --base "$target_branch" --assignee @me --fill --body "$final_body" --draft)
 
-pr_response=$(gh pr create --base "$target_branch" --assignee @me --fill --body "$final_body" --draft)
+# Open the pull request URL in the default web browser
+echo "Opening pull request $pr_url"
+open "$pr_url"
 
-echo "\c\n"
-echo "Generated Pull Request Description:"
-echo "$pr_response"
-# pr_url=$(echo "$pr_response" | jq -r '.url')
-#
-# echo "Pull request created: $pr_url"
 
 
