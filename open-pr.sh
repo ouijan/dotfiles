@@ -18,9 +18,9 @@ fi
 
 
 # Generate pull request description using Gemini AI
-# prompt="Write a concise pull request description for these changes. Be sure to include the purpose of the changes and any relevant context. Fill out the @.github/pull_request_template.md template as appropriate. \n $(git diff $target_remote_branch)"
-# initial_body=$(echo "$prompt" | gemini)
-initial_body="test pr body"
+prompt="Write a concise pull request description for these changes. Be sure to include the purpose of the changes and any relevant context. Fill out the @.github/pull_request_template.md template as appropriate. \n $(git diff $target_remote_branch)"
+initial_body=$(echo "$prompt" | gemini)
+# initial_body="test pr body"
 
 # Open the editor for user to edit the PR description
 temp_file=$(mktemp) # Create a temporary file
@@ -30,7 +30,7 @@ nvim "$temp_file" < /dev/tty # Open nvim for editing
 final_body=$(cat "$temp_file") # Read the edited content
 
 
-pr_response=$(gh pr create --base "$target_branch" --assignee @me --fill --body "$final_body" --draft --dry-run)
+pr_response=$(gh pr create --base "$target_branch" --assignee @me --fill --body "$final_body" --draft)
 
 echo "\c\n"
 echo "Generated Pull Request Description:"
