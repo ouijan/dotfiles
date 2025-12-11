@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 if [[ ! -z "$(git status --porcelain)" ]]; then
     echo "Working tree is not clean. There are uncommitted changes."
@@ -29,6 +30,7 @@ nvim "$temp_file" < /dev/tty # Open nvim for editing
 final_body=$(cat "$temp_file") # Read the edited content
 
 # Create the pull request using GitHub CLI
+
 pr_url=$(gh pr create --base "$target_branch" --assignee @me --fill --body "$final_body" --draft)
 
 # Open the pull request URL in the default web browser
