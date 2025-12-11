@@ -1,5 +1,10 @@
 #!/bin/bash
-GH_FORCE_TTY=true
+
+if [[ ! -z "$(git status --porcelain)" ]]; then
+    echo "Working tree is not clean. There are uncommitted changes."
+    exit 1
+fi
+
 target_branch=$(git show-ref --verify --quiet refs/remotes/origin/master && echo "origin/master" || \
     git show-ref --verify --quiet refs/remotes/origin/main && echo "origin/main")
 
@@ -10,10 +15,10 @@ target_branch=$(git show-ref --verify --quiet refs/remotes/origin/master && echo
 
 pr_body="test pr body"
 
-gh pr create --base "$target_branch" --assignee @me --fill --body "$pr_body" --editor --draft --dry-run
+pr_response=$(gh pr create --base "$target_branch" --assignee @me --fill --body "$pr_body" --editor --draft --dry-run)
 
-# echo "Generated Pull Request Description:"
-# echo "$pr_response"
+echo "Generated Pull Request Description:"
+echo "$pr_response"
 # pr_url=$(echo "$pr_response" | jq -r '.url')
 #
 # echo "Pull request created: $pr_url"
