@@ -3,7 +3,7 @@ return {
 		"mason-org/mason.nvim",
 		opts = {},
 	},
-    {
+	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
@@ -19,9 +19,9 @@ return {
 				-- Formatters
 				"prettierd",
 				"stylua",
-				-- "goimports",
-				-- "golines",
-				-- "gofumpt",
+				"goimports",
+				"golines",
+				"gofumpt",
 				-- "clang-format",
 				-- DAPs
 				"delve", -- Go debugger

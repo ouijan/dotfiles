@@ -53,6 +53,9 @@ if command -v pacman >/dev/null 2>&1; then
         fzf \
         gpg \
         pass
+
+
+    systemctl --user enable --now ssh-agent.service
 fi
 
 # ------------------------------------------------------

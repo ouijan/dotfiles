@@ -6,6 +6,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 # Default editor
 export EDITOR=nvim
+export MANPAGER="nvim +Man!"
 
 # -----------------------------------------------
 # Oh My Zsh and Powerlevel10k theme setup
@@ -90,13 +91,19 @@ alias lt="eza -TL 2 --icons"
 # Git aliases
 alias lg="lazygit"
 
-
 # -----------------------------------------------
 # CLI tools
 # -----------------------------------------------
+
+# MacOS specific
 if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # Homebrew libs to PATH
+  # Add Homebrew libs to PATH
   eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Arch specific
+if [[ -f "/usr/bin/pacman" ]] then
+
 fi
 
 # Command-line fuzzy finder: https://github.com/junegunn/fzf
