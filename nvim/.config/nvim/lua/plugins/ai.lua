@@ -21,7 +21,13 @@ return {
 				desc = "AI Actions",
 			},
 		},
-		opts = {},
+		opts = {
+			strategies = {
+				chat = {
+					adapter = "gemini_cli",
+				},
+			},
+		},
 	},
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
