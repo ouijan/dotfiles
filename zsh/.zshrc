@@ -103,7 +103,7 @@ fi
 
 # Arch specific
 if [[ -f "/usr/bin/pacman" ]] then
-
+    eval "$(keychain --eval --quiet)"
 fi
 
 # Command-line fuzzy finder: https://github.com/junegunn/fzf
