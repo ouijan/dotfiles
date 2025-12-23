@@ -6,6 +6,21 @@
   },
   "general": {
     "preferredEditor": "neovim",
-    "vimMode": true
+    "vimMode": true,
+    "previewFeatures": true
+  },
+  "output": {
+    "format": "text"
+  },
+  "ui": {
+    "hideBanner": false,
+    "showStatusInTitle": false
+  },
+  "tools": {
+    "useRipgrep": true,
+    "autoAccept": true,
+    "shell": {
+      "showColor": true
+    }
   }
 }

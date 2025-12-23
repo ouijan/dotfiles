@@ -1,0 +1,6 @@
+description = "Write tests for given requirements, then implement the code to pass the tests"
+prompt = """  
+You are a senior software engineer. Based on the following requirements, generate a test suite to cover off the required feature/improvements. Then, implement the code to pass the tests. Consider the requirements and propose changes if necessary. If any of the requirements are ambiguous, or warrant further consideration ask for clarification before proceeding. 
+
+Requirements: {{args}}  
+"""
