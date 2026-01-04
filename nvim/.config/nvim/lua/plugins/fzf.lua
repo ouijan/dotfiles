@@ -6,7 +6,7 @@ return {
 		{
 			"<leader><leader>",
 			function()
-				require("fzf-lua").combine({ pickers = "oldfiles;git_diff" })
+				require("fzf-lua").global()
 			end,
 			desc = "Search Recent + Git",
 		},
@@ -17,13 +17,6 @@ return {
 				require("fzf-lua").files()
 			end,
 			desc = "Search Files",
-		},
-		{
-			"<leader>sF",
-			function()
-				require("fzf-lua").live_grep()
-			end,
-			desc = "Search Grep",
 		},
 		{
 			"<leader>sg",
@@ -46,13 +39,13 @@ return {
 			end,
 			desc = "Search Resume",
 		},
-		{
-			"<leader>sb",
-			function()
-				require("fzf-lua").buffers()
-			end,
-			desc = "Search open buffers",
-		},
+		-- {
+		-- 	"<leader>sb",
+		-- 	function()
+		-- 		require("fzf-lua").buffers()
+		-- 	end,
+		-- 	desc = "Search open buffers",
+		-- },
 		-- Code Actions
 		{
 			"<leader>ca",
@@ -61,20 +54,20 @@ return {
 			end,
 			desc = "Code Actions",
 		},
-		{
-			"<leader>cs",
-			function()
-				require("fzf-lua").lsp_document_symbols()
-			end,
-			desc = "Code Symbols Document",
-		},
-		{
-			"<leader>cS",
-			function()
-				require("fzf-lua").lsp_live_workspace_symbols()
-			end,
-			desc = "Code Symbols Workspace",
-		},
+		-- {
+		-- 	"<leader>cs",
+		-- 	function()
+		-- 		require("fzf-lua").lsp_document_symbols()
+		-- 	end,
+		-- 	desc = "Code Symbols Document",
+		-- },
+		-- {
+		-- 	"<leader>cS",
+		-- 	function()
+		-- 		require("fzf-lua").lsp_live_workspace_symbols()
+		-- 	end,
+		-- 	desc = "Code Symbols Workspace",
+		-- },
 		{
 			"<leader>cd",
 			function()
@@ -144,11 +137,11 @@ return {
 		-- 	preview_normal = "Normal",
 		-- 	preview_border = "Normal",
 		-- },
-		-- keymap = {
-		-- 	fzf = {
-		-- 		["ctrl-q"] = "select-all+accept",
-		-- 	},
-		-- },
+		keymap = {
+			fzf = {
+				["ctrl-q"] = "select-all+accept",
+			},
+		},
 		files = {
 			prompt = "Files> ",
 		},
@@ -164,6 +157,10 @@ return {
 					},
 				},
 			},
+		},
+		code_actions = {
+			prompt = "Code Actions> ",
+			preview = false,
 		},
 	},
 	config = function(_, opts)

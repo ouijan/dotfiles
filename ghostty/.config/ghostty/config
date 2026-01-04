@@ -8,7 +8,7 @@ font-size = 15
 # font-thicken-strength = 5
 
 # Transparency Settings
-background-opacity = .90
+background-opacity = .95
 background-blur = 20
 
 

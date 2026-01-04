@@ -1,6 +1,3 @@
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
-
 vim.opt.updatetime = 50
 vim.o.termguicolors = true
 vim.g.have_nerd_font = true

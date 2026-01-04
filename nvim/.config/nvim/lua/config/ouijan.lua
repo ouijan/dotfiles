@@ -1,6 +1,6 @@
 local M = {}
 
----@diagnostic disable-next-line: lowercase-global
+--@diagnostic disable-next-line: lowercase-global
 ouijan = M
 
 M.format = function()

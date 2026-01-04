@@ -25,38 +25,13 @@ return {
 		opts = {
 			popup_border_style = "solid",
 			window = {
-				-- width = 55,
-				-- position = "float",
-				popup = { -- settings that apply to float position only
+				popup = {
 					size = { height = "100%", width = "100%" },
-					-- position = 0, -- 50% means center it
-					-- win_options = {
-					-- 	winblend = 10,
-					-- 	winhighlight = "Normal:NormalFloat,FloatBorder:NormalFloat",
-					-- },
 				},
 			},
 			filesystem = {
 				follow_current_file = {
-                    enabled = true,
-                },
-			},
-			default_component_configs = {
-				git_status = {
-					symbols = {
-						-- Change type
-						added = "+",
-						deleted = "d",
-						modified = "m",
-						renamed = "r",
-						-- Status type
-						untracked = "?",
-						ignored = "",
-						unstaged = "u",
-						staged = "s",
-						conflict = "c",
-					},
-					align = "right",
+					enabled = true,
 				},
 			},
 		},
