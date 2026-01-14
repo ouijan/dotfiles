@@ -18,6 +18,6 @@ if [[ "$OSTYPE" == "linux"* ]]; then
 fi
 
 # Platform agnostic
-stow -R -v git nvim tmux zsh lazygit gemini
+stow -R -v git nvim tmux zsh lazygit gemini opencode
 
 echo "Done! 🎉"

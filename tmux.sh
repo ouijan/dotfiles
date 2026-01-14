@@ -20,10 +20,12 @@ echo "Creating new session: $SESSION_NAME"
 tmux new-session -d -s "$SESSION_NAME"
 tmux new-window -t "$SESSION_NAME:1" -n "nvim"
 tmux send-keys -t "$SESSION_NAME:1" "nvim" C-m
+tmux split-window -h -t "$SESSION_NAME:1" 
+tmux send-keys -t "$SESSION_NAME:1" "opencode" C-m
 
 tmux new-window -t "$SESSION_NAME:2" -n "zsh"
 tmux split-window -h -t "$SESSION_NAME:2" 
-tmux send-keys -t "$SESSION_NAME:2" "gemini" C-m
+# tmux send-keys -t "$SESSION_NAME:2" "opencode" C-m
 
 tmux new-window -t "$SESSION_NAME:3" -n "lazygit"
 tmux send-keys -t "$SESSION_NAME:3" "lazygit" C-m
