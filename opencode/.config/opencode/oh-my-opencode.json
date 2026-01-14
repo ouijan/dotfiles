@@ -3,25 +3,25 @@
   "google_auth": false,
   "agents": {
     "Sisyphus": {
-      "model": "opencode/glm-4.7-free"
+      "model": "github-copilot/claude-opus-4.5"
     },
     "librarian": {
-      "model": "opencode/glm-4.7-free"
+      "model": "github-copilot/claude-sonnet-4"
     },
     "explore": {
-      "model": "opencode/glm-4.7-free"
+      "model": "google/antigravity-gemini-3-flash"
     },
     "oracle": {
-      "model": "opencode/glm-4.7-free"
+      "model": "github-copilot/o3"
     },
     "frontend-ui-ux-engineer": {
-      "model": "opencode/glm-4.7-free"
+      "model": "google/antigravity-gemini-3-pro-high"
     },
     "document-writer": {
-      "model": "opencode/glm-4.7-free"
+      "model": "google/antigravity-gemini-3-flash"
     },
     "multimodal-looker": {
-      "model": "opencode/glm-4.7-free"
+      "model": "google/antigravity-gemini-3-flash"
     }
   }
 }
