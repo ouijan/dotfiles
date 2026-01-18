@@ -96,13 +96,12 @@ alias lg="lazygit"
 # -----------------------------------------------
 
 
+# Local bin scripts (cross-platform)
+export PATH="$HOME/.local/bin:$PATH"
+
 # MacOS specific
 if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # Add Homebrew libs to PATH
   eval "$(/opt/homebrew/bin/brew shellenv)"
-
-  # Add local bin to PATH
-  export PATH="$PATH:/Users/tobyharris/.local/bin"
 fi
 
 # Arch specific

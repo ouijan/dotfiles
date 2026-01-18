@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "theme": "system",
+  "theme": "tharris",
   "autoupdate": true,
   "instructions": [
     ".github/instructions/*.md",

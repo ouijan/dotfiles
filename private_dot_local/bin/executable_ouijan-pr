@@ -36,9 +36,12 @@ final_body=$(cat "$temp_file") # Read the edited content
 echo "Creating pull request on GitHub..."
 pr_url=$(gh pr create --base "$target_branch" --assignee @me --fill --body "$final_body" --draft)
 
-# Open the pull request URL in the default web browser
+# Open the pull request URL in the default web browser (cross-platform)
 echo "Opening pull request $pr_url"
-open "$pr_url"
-
-
-
+if command -v xdg-open &> /dev/null; then
+    xdg-open "$pr_url"
+elif command -v open &> /dev/null; then
+    open "$pr_url"
+else
+    echo "Open this URL: $pr_url"
+fi

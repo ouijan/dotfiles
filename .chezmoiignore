@@ -4,10 +4,6 @@ README.md
 {{- if ne .chezmoi.os "darwin" }}
 # macOS only
 .config/aerospace
+.local/bin/ouijan-cli
 {{- end }}
 
-{{- if ne .chezmoi.os "linux" }}
-# Linux only
-.config/hypr
-.config/waybar
-{{- end }}
