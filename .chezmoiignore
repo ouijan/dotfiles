@@ -1,0 +1,13 @@
+# Repository files - not dotfiles
+README.md
+
+{{- if ne .chezmoi.os "darwin" }}
+# macOS only
+.config/aerospace
+{{- end }}
+
+{{- if ne .chezmoi.os "linux" }}
+# Linux only
+.config/hypr
+.config/waybar
+{{- end }}

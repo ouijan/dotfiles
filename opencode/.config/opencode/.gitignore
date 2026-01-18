@@ -1,8 +1,0 @@
-# From OpenCode
-node_modules
-package.json
-bun.lock
-.gitignore
-
-# For Stow
-secrets/

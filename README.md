@@ -1,11 +1,33 @@
 # dotfiles
 
-This repository contains my personal dotfiles and configuration files for various applications and tools. These files help me maintain a consistent development environment across different machines.
+Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 
-## Installation
+## Quick Start (New Machine)
 
-Clone the repository and use the provided scripts to set up your environment.
-
+```bash
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply <github-username>
 ```
-./sync-configs.sh        # Script to synchronize dotfiles
+
+## Installation (Existing Clone)
+
+```bash
+# Full setup (packages + configs)
+./install.sh
+
+# Or just apply dotfiles
+chezmoi init --source ~/dotfiles --apply
 ```
+
+## Updating
+
+```bash
+chezmoi update
+```
+
+## Structure
+
+- `dot_config/` - XDG config files (`~/.config/`)
+- `dot_gemini/` - Gemini CLI config (`~/.gemini/`)
+- `dot_zshrc`, `dot_p10k.zsh`, etc. - Home directory dotfiles
+- `.chezmoiignore` - OS-conditional file exclusions
+- `.chezmoiexternal.toml` - External dependencies (e.g., tmux catppuccin theme)

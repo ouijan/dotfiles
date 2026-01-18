@@ -18,7 +18,7 @@ if command -v brew &> /dev/null; then
         git \
         curl \
         wget \
-        stow \
+        chezmoi \
         neovim \
         tmux \
         lazygit \
@@ -43,7 +43,7 @@ if command -v pacman >/dev/null 2>&1; then
         git \
         curl \
         wget \
-        stow \
+        chezmoi \
         neovim \
         tmux \
         lazygit \
@@ -99,4 +99,4 @@ fi
 # ------------------------------------------------------
 # Configs setup
 # ------------------------------------------------------
-./sync-configs.sh
+chezmoi init --source ~/dotfiles --apply

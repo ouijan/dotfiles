@@ -1,6 +1,0 @@
-description = "Generate a concise plan from requirements"  
-prompt = """  
-You are a project planner. Based on the following requirements, generate a numbered plan with deliverables, time estimates and testing tasks.  
-
-Requirements: {{args}}  
-"""

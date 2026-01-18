@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# echo "arg1: $1"
+# echo "arg2: $2"
+
+chrome_profile_personal="--profile-directory='Default'"
+chrome_profile_work="--profile-directory='Profile 1'"
+
+# terminal +command
+if [[ "$1" == "terminal" ]]; then
+    if [[ -n "$2" ]]; then
+        # open -na "Ghostty.app" --args -e $2
+        alacritty --command "$2"
+    else
+        # open -na "Ghostty.app" --args
+        alacritty --command zsh 
+    fi
+fi
+
+# browser +url
+if [[ "$1" == "browser" ]]; then
+    if [[ -n "$2" ]]; then
+        open -a "Google Chrome" $2 --args
+    else
+        open -a "Google Chrome" --args
+    fi
+fi
+
+
+# browser_private +url
+if [[ "$1" == "privatebrowser" ]]; then
+    if [[ -n "$2" ]]; then
+        open -a "Google Chrome" $2 --args --incognito
+    else
+        open -a "Google Chrome" --args --incognito
+    fi
+fi
+
+# filemanager
+if [[ "$1" == "filemanager" ]]; then
+    open -R ~
+fi
+
+# activity
+if [[ "$1" == "activity" ]]; then
+    # open -na "Ghostty.app" --args -e btop
+    alacritty --command "btop"
+fi
+
+# music
+if [[ "$1" == "music" ]]; then
+    open -a "spotify"
+fi
+
+# passwordmanager
+if [[ "$1" == "passwordmanager" ]]; then
+    open -a "Bitwarden"
+fi
+
+# editor
+if [[ "$1" == "editor" ]]; then
+    # open -na "Ghostty.app" --args -e nvim
+    alacritty --command "nvim"
+fi
+
+# calendar
+if [[ "$1" == "calendar" ]]; then
+    open -a "Google Chrome" https://calendar.google.com/
+fi
+
+# email
+if [[ "$1" == "email" ]]; then
+    open -a "Google Chrome" https://mail.google.com/
+fi
+
+# ai
+if [[ "$1" == "ai" ]]; then
+    open -a "Google Gemini"
+    # open -a "ChatGPT"
+fi
+
+# messenger
+if [[ "$1" == "messenger" ]]; then
+    open -a "Messenger"
+fi
+
+# whatsapp
+# if [[ "$1" == "whatsapp" ]]; then
+    # todo
+# fi
+
+# slack
+if [[ "$1" == "slack" ]]; then
+    # open -a "Google Chrome" https://app.slack.com/client/T952AMLG4 --args chrome_profile_work
+    open -a "Slack"
+fi
+
+# clickup
+if [[ "$1" == "clickup" ]]; then
+    if [[ -n "$2" ]]; then
+        open -a "Google Chrome" "https://app.clickup.com/t/$2" --args $chrome_profile_work
+    else
+        open -a "Google Chrome" "https://app.clickup.com/" --args $chrome_profile_work
+    fi
+fi
+
+# fileshare
+if [[ "$1" == "fileshare" ]]; then
+    open -a "LocalSend" 
+fi
+
