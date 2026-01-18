@@ -95,6 +95,7 @@ alias lg="lazygit"
 # CLI tools
 # -----------------------------------------------
 
+
 # MacOS specific
 if [[ -f "/opt/homebrew/bin/brew" ]] then
   # Add Homebrew libs to PATH
@@ -136,6 +137,10 @@ if [ -f '/Users/tobyharris/Downloads/google-cloud-sdk/completion.zsh.inc' ]; the
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Grove: https://github.com/captainsafia/grove
+export PATH="$HOME/.grove/bin:$PATH"
+
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/tobyharris/.docker/completions $fpath)
 autoload -Uz compinit

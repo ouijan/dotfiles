@@ -20,12 +20,17 @@ $ARGUMENTS
 # Step 3 - Run the Tests
 
 - Use the command `pnpm nx run <module-name>:test` to run the tests for each module where spec files were added. Ensure all tests pass successfully.
+- ALWAYS run tests to ensure nothing is broken.
 - If any tests fail, investigate and resolve the issues before proceeding.
 - Use `jest-canvas-mock` if needed.
 - Do not import `import 'jest-preset-angular/setup-jest';` directly. It will cause warnings
 - avoid using `overrideComponent`
 - do not mock components child, mock the services they need instead
 - use overrideProvider for component level provided services
+- Fix the following warning when encountered: "Importing "setup-jest.js" directly is deprecated."
+- ALWAYS ASK BEFORE:
+  - before making any architectural changes!
+  - Trying to skip the 'detetectChanges' calls. We want to check the component renders properly.
 
 # Step 4 - Document Changes
 

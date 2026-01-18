@@ -1,77 +1,57 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "theme": "catppuccin-macchiato",
+  "theme": "system",
   "autoupdate": true,
-  "keybinds": {},
-  "plugin": [
-    "oh-my-opencode",
-    "opencode-antigravity-auth@1.2.8"
+  "instructions": [
+    ".github/instructions/*.md",
+    "~/.config/opencode/instructions/*.md"
   ],
-  "mcp": {},
-  "provider": {
-    "github-copilot": {
-      "name": "GitHub Copilot"
+  "plugin": ["opencode-antigravity-auth@1.3.0"],
+  "mcp": {
+    "fetch": {
+      "enabled": true,
+      "type": "local",
+      "command": ["uvx", "mcp-server-fetch"]
     },
-    "google": {
-      "name": "Google",
-      "models": {
-        "antigravity-gemini-3-pro-high": {
-          "name": "Gemini 3 Pro High (Antigravity)",
-          "thinking": true,
-          "attachment": true,
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        },
-        "antigravity-gemini-3-pro-low": {
-          "name": "Gemini 3 Pro Low (Antigravity)",
-          "thinking": true,
-          "attachment": true,
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        },
-        "antigravity-gemini-3-flash": {
-          "name": "Gemini 3 Flash (Antigravity)",
-          "attachment": true,
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        }
+    "context7": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "{file:./secrets/context7_api_key}"
       }
+    },
+    "container-use": {
+      "enabled": false,
+      "type": "local",
+      "command": ["container-use", "stdio"]
+    },
+    "playwright": {
+      "enabled": false,
+      "type": "local",
+      "command": ["npx", "@playwright/mcp@latest", "--headless"]
+    },
+    "chrome-devtools": {
+      "enabled": false,
+      "type": "local",
+      "command": ["npx", "-y", "chrome-devtools-mcp@latest"]
+    },
+    "github": {
+      "enabled": true,
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-github",
+        "--GITHUB_PERSONAL_ACCESS_TOKEN",
+        "{file:./secrets/github_token}"
+      ]
+    },
+    "clickup": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://mcp.clickup.com/mcp",
+      "oauth": {}
     }
   }
 }
