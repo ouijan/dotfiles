@@ -8,16 +8,6 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply <github-username>
 ```
 
-## Installation (Existing Clone)
-
-```bash
-# Apply dotfiles first
-chezmoi init --source ~/dotfiles --apply
-
-# Then run full setup (packages, shell plugins, etc.)
-ouijan-install
-```
-
 ## Updating
 
 ```bash
@@ -48,12 +38,12 @@ dotfiles/
 
 Scripts installed to `~/.local/bin/` and available in PATH on all systems.
 
-| Command | Description | Platforms |
-|---------|-------------|-----------|
-| `ouijan-cli` | App launcher helper for aerospace/shortcuts | macOS only |
-| `ouijan-install` | Bootstrap script for new machines (packages, shell, configs) | All |
-| `ouijan-pr` | Create GitHub PR with Gemini AI-generated description | All |
-| `ouijan-tmux` | Launch standardized tmux workspace (nvim, opencode, lazygit) | All |
+| Command          | Description                                                  | Platforms  |
+| ---------------- | ------------------------------------------------------------ | ---------- |
+| `ouijan-cli`     | App launcher helper for aerospace/shortcuts                  | macOS only |
+| `ouijan-install` | Bootstrap script for new machines (packages, shell, configs) | All        |
+| `ouijan-pr`      | Create GitHub PR with Gemini AI-generated description        | All        |
+| `ouijan-tmux`    | Launch standardized tmux workspace (nvim, opencode, lazygit) | All        |
 
 ### Usage Examples
 
@@ -98,9 +88,9 @@ Tiling window manager configuration.
 
 ## Platform Support
 
-| Platform | Status |
-|----------|--------|
-| macOS (Homebrew) | Full support |
+| Platform            | Status       |
+| ------------------- | ------------ |
+| macOS (Homebrew)    | Full support |
 | Arch Linux (pacman) | Full support |
 
 OS-specific files are automatically included/excluded via `.chezmoiignore`.

@@ -18,7 +18,7 @@
       "type": "remote",
       "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "CONTEXT7_API_KEY": "{file:./secrets/context7_api_key}"
+        "CONTEXT7_API_KEY": "{{ .context7_api_key }}"
       }
     },
     "container-use": {
@@ -44,7 +44,7 @@
         "-y",
         "@modelcontextprotocol/server-github",
         "--GITHUB_PERSONAL_ACCESS_TOKEN",
-        "{file:./secrets/github_token}"
+        "{{ .github_token }}"
       ]
     },
     "clickup": {
