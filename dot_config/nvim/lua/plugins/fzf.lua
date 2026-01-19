@@ -33,6 +33,13 @@ return {
 			desc = "Search Git Diff",
 		},
 		{
+			"<leader>sw",
+			function()
+				require("fzf-lua").git_worktrees()
+			end,
+			desc = "Search Git Worktrees",
+		},
+		{
 			"<leader>sr",
 			function()
 				require("fzf-lua").resume()
@@ -124,8 +131,10 @@ return {
 				width = 1,
 			},
 		},
+		multiprocess = true,
 		winopts = {
 			border = "solid",
+			winblend = true,
 			preview = {
 				border = "solid",
 				scrollbar = "float",
@@ -150,12 +159,54 @@ return {
 		},
 		git = {
 			diff = {
-				prompt = "Git Diff> ",
+				prompt = "Diff> ",
 				winopts = {
 					preview = {
 						hidden = true,
 					},
 				},
+			},
+			worktrees = {
+				prompt = "Worktrees> ",
+				preview = false,
+				actions = {
+					["default"] = function(selected)
+						if not selected or not selected[1] then
+							return
+						end
+						-- Strip ANSI codes first, then extract path after "(bare) " or "[branch] "
+						local clean = selected[1]:gsub("\27%[[%d;]*m", "")
+						local path = clean:match("^%(.-%s(.+)$") or clean:match("^%[.-%]%s(.+)$")
+						if path then
+							-- Clear jumplist (like git-worktree.nvim does)
+							vim.cmd("clearjumps")
+							-- Change directory
+							vim.cmd("cd " .. vim.fn.fnameescape(path))
+							-- Open the root directory to force buffer refresh
+							vim.cmd("edit .")
+							-- Emit events to refresh statusline plugins
+							vim.api.nvim_exec_autocmds("User", {
+								pattern = "GitWorktreeChanged",
+							})
+							vim.api.nvim_exec_autocmds("BufEnter", {})
+							vim.notify("Switched to worktree: " .. path)
+						end
+					end,
+				},
+				fn_transform = function(line)
+					local path, rest = line:match("^(%S+)%s+(.+)$")
+					if not path then
+						return line
+					end
+					local branch = rest:match("%[(.-)%]") or rest:match("%((.-)%)") or ""
+					-- Grey ANSI color for path
+					local grey = "\27[90m"
+					local reset = "\27[0m"
+					if branch == "bare" then
+						return "(bare) " .. grey .. path .. reset
+					end
+					return "[" .. branch .. "] " .. grey .. path .. reset
+				end,
 			},
 		},
 		code_actions = {

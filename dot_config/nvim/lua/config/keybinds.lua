@@ -27,3 +27,8 @@ end, { desc = "Format" })
 vim.keymap.set("n", "<leader>gc", function()
 	ouijan.commitizen()
 end, { desc = "Git Conventional Commit" })
+
+-- Explorer
+vim.keymap.set("n", "<leader>-", function()
+	ouijan.open_explorer()
+end, { desc = "Open File Explorer" })

@@ -16,3 +16,10 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 		require("gitsigns").refresh()
 	end,
 })
+
+vim.api.nvim_create_autocmd("User", {
+	pattern = "GitWorktreeChanged",
+	callback = function()
+		ouijan.open_explorer()
+	end,
+})

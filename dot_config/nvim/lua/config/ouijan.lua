@@ -25,3 +25,12 @@ M.commitizen = function()
 	vim.api.nvim_command("resize 10")
 	vim.api.nvim_command("startinsert")
 end
+
+M.open_explorer = function()
+	require("neo-tree.command").execute({
+		action = "focus",
+		source = "filesystem",
+		position = "float",
+		reveal = true,
+	})
+end

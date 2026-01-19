@@ -8,20 +8,6 @@ return {
 			"nvim-tree/nvim-web-devicons", -- optional, but recommended
 		},
 		lazy = false, -- neo-tree will lazily load itself
-		keys = {
-			{
-				"<leader>-",
-				function()
-					require("neo-tree.command").execute({
-						action = "focus",
-						source = "filesystem",
-						position = "float",
-						reveal = true,
-					})
-				end,
-				desc = "Open File Explorer",
-			},
-		},
 		opts = {
 			popup_border_style = "solid",
 			window = {
