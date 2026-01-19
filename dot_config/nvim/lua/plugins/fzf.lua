@@ -178,18 +178,16 @@ return {
 						local clean = selected[1]:gsub("\27%[[%d;]*m", "")
 						local path = clean:match("^%(.-%s(.+)$") or clean:match("^%[.-%]%s(.+)$")
 						if path then
-							-- Clear jumplist (like git-worktree.nvim does)
-							vim.cmd("clearjumps")
-							-- Change directory
-							vim.cmd("cd " .. vim.fn.fnameescape(path))
-							-- Open the root directory to force buffer refresh
-							vim.cmd("edit .")
-							-- Emit events to refresh statusline plugins
-							vim.api.nvim_exec_autocmds("User", {
-								pattern = "GitWorktreeChanged",
-							})
-							vim.api.nvim_exec_autocmds("BufEnter", {})
-							vim.notify("Switched to worktree: " .. path)
+							-- Change to the selected worktree directory
+							vim.schedule(function()
+								vim.cmd("clearjumps")
+								vim.cmd("%bdelete!")
+								vim.cmd("cd " .. vim.fn.fnameescape(path))
+								vim.api.nvim_exec_autocmds("User", {
+									pattern = "GitWorktreeChanged",
+								})
+								vim.notify("Switched to worktree: " .. path)
+							end)
 						end
 					end,
 				},
