@@ -21,5 +21,7 @@ vim.api.nvim_create_autocmd("User", {
 	pattern = "GitWorktreeChanged",
 	callback = function()
 		ouijan.open_explorer()
+		vim.uv.set_process_title("HI THERE")
+		vim.opt.titlestring = "TITLEBABEnvim"
 	end,
 })

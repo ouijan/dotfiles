@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "agents": {
+    "Sisyphus": {
+      "model": "github-copilot/claude-opus-4.5"
+    },
+    "OpenCode-Builder": {
+      "model": "github-copilot/claude-opus-4.5"
+    },
+    "Prometheus (Planner)": {
+      "model": "github-copilot/claude-opus-4.5"
+    },
+    "Orchestrator Sisyphus": {
+      "model": "github-copilot/claude-opus-4.5"
+    },
+    "Atlas": {
+      "model": "github-copilot/claude-opus-4.5"
+    },
+    "Metis (Plan Consultant)": {
+      "model": "github-copilot/claude-opus-4.5"
+    },
+    "oracle": {
+      "model": "github-copilot/gpt-5.2-codex"
+    },
+    "explore": {
+      "model": "opencode/grok-code"
+    },
+    "librarian": {
+      "model": "github-copilot/gpt-5.2"
+    }
+  },
+  "categories": {
+    "visual": {},
+    "business-logic": {},
+    "visual-engineering": {},
+    "ultrabrain": {},
+    "artistry": {},
+    "quick": {},
+    "unspecified-low": {},
+    "unspecified-high": {},
+    "writing": {}
+  }
+}

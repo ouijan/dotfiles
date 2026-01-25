@@ -6,6 +6,31 @@ customCommands:
     context: "files"
     loadingText: "opening commitizen commit tool"
     output: terminal
+  - key: "O"
+    command: "tmux new-window opencode"
+    description: "open opencode in new tmux tab"
+    context: "status, files"
+  - key: "O"
+    command: "tmux new-window 'cd {{.SelectedWorktree.Path}} && opencode'"
+    description: "open opencode in new tmux tab for worktree"
+    context: "worktrees"
+  - key: "E"
+    command: "tmux new-window nvim"
+    description: "open nvim in new tmux tab"
+    context: "status, files"
+  - key: "E"
+    command: "tmux new-window 'cd {{.SelectedWorktree.Path}} && nvim'"
+    description: "open nvim in new tmux tab for worktree"
+    context: "worktrees"
+  - key: "T"
+    command: "tmux new-window zsh"
+    description: "open terminal in new tmux tab"
+    context: "status, files"
+  - key: "T"
+    command: "tmux new-window 'cd {{.SelectedWorktree.Path}} && zsh'"
+    description: "open terminal in new tmux tab for worktree"
+    context: "worktrees"
+
 git:
   pagers:
     - colorArg: always

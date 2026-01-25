@@ -1,0 +1,25 @@
+# tmux-portal configuration
+# See: https://github.com/ouijan/tmux-portal
+
+# SSH connection timeout in seconds
+# Hosts that don't respond within this time will show a warning
+timeout: 3
+
+# List of hosts to query for tmux sessions
+hosts:
+  # Local machine - set local: true on the machine running tmux-portal
+  # Sessions on this host use native tmux commands (no SSH)
+  - name: local
+    address: localhost
+    local: true
+
+  # Remote hosts - accessed via SSH
+  # Ensure SSH keys are configured for passwordless access
+  - name: Server
+    address: 10.0.0.2
+    user: tharris
+
+  # You can also use IP addresses or regular hostnames
+  - name: desktop
+    address: 10.0.0.4
+    user: tharris

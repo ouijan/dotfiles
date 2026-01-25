@@ -1,33 +1,23 @@
 # Agent Instructions
 
-## 🤖 Memory Protocol
+## Session Journaling
 
-1. **Sync:** Read `memory.md` first. It is the single source of truth.
-2. **Log:** Update the **Current State** and **Decision Log** in `memory.md` after every significant change.
-3. **Prune:** Keep descriptions atomic. Use key-value pairs or bullets. No prose.
-4. **Handoff:** Before exit, record the exact technical blocker or next line of code to write.
+Use the `jrnl` skill to record your work. Always include `@agent` and `@repo/owner/name` tags.
 
-[Template Ref](./memory-template.md)
+- **AFTER MAKING A DECISION YOU MUST** - Log decisions, blockers, and significant progress: `jrnl "Decision: chose X over Y. Rationale. @agent @repo/${repo} @decision"`
+- **BEFORE EXISTING YOU MUST** - Summarize what was done and next steps: `jrnl "Session summary: accomplished X, Y. Next: Z. @agent @repo/${repo} @session-end"`
 
 ## Rules
 
-- Never commit or push master/main branch directly.
-- Never delete files or run destructive commands (`rm -rf`, `git reset --hard`, `git push --force`) without explicit approval.
-- Never commit secrets to version control.
-- Ask before expanding scope beyond the explicit request.
-- Keep all changes in the working tree; do not commit at intervals.
-
-## Planning
-
-- Before deep analysis of a when planning, building or reviewing a PRD, check:
-  - What existing tools solve part of this problem?
-  - Can scope be reduced by delegation to existing tools?
-- Start user dialogue earlier while background research runs
-- Clarify ambiguous requirements before starting work.
+- Never commit/push to main directly
+- Never run destructive commands without approval
+- Never commit secrets
+- Ask before expanding scope
+- Keep changes in working tree; don't commit at intervals
 
 ## Code Style
 
-- Keep nesting levels to a maximum of 3.
-- Use clear and descriptive names for variables and functions (self-documenting).
-- Write small, focused functions that do one thing well.
-- Use intermediate variables for complex expressions & string building to enhance readability.
+- Max 3 nesting levels
+- Self-documenting names
+- Small, focused functions
+- Intermediate variables for complex expressions
