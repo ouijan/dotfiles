@@ -105,9 +105,9 @@ if [[ -f "/opt/homebrew/bin/brew" ]] then
 fi
 
 # Arch specific
-if [[ -f "/usr/bin/pacman" ]] then
-    eval "$(keychain --eval --quiet)"
-fi
+# if [[ -f "/usr/bin/pacman" ]] then
+#     eval "$(keychain --eval --quiet)"
+# fi
 
 # Command-line fuzzy finder: https://github.com/junegunn/fzf
 source <(fzf --zsh)
@@ -138,7 +138,11 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Grove: https://github.com/captainsafia/grove
-export PATH="$HOME/.grove/bin:$PATH"
+# export PATH="$HOME/.grove/bin:$PATH"
+
+# K8s config
+export KUBECONFIG=~/.kube/config
+alias k="kubectl"
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/tobyharris/.docker/completions $fpath)

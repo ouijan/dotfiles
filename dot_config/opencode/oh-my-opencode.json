@@ -1,22 +1,16 @@
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "agents": {
-    "Sisyphus": {
+    "sisyphus": {
       "model": "github-copilot/claude-opus-4.5"
     },
-    "OpenCode-Builder": {
+    "prometheus": {
       "model": "github-copilot/claude-opus-4.5"
     },
-    "Prometheus (Planner)": {
+    "atlas": {
       "model": "github-copilot/claude-opus-4.5"
     },
-    "Orchestrator Sisyphus": {
-      "model": "github-copilot/claude-opus-4.5"
-    },
-    "Atlas": {
-      "model": "github-copilot/claude-opus-4.5"
-    },
-    "Metis (Plan Consultant)": {
+    "metis": {
       "model": "github-copilot/claude-opus-4.5"
     },
     "oracle": {
