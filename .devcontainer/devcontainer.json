@@ -1,0 +1,11 @@
+{
+  "name": "DevBox",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.config,target=/home/devuser/.config,type=bind",
+    "source=${localEnv:HOME}/.ssh,target=/home/devuser/.ssh,type=bind,readonly"
+  ],
+  "remoteUser": "devuser"
+}
