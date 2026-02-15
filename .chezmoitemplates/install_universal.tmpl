@@ -1,68 +1,6 @@
-#!/bin/bash
-
-log_header() {
-cat << EOF
-------------------------------------------------------
-    $1
-------------------------------------------------------
-EOF
-}
-
-# ------------------------------------------------------
-# MacOS packages 
-# ------------------------------------------------------
-if command -v brew &> /dev/null; then
-    log_header "Installing MacOS packages"
-    brew install \
-        zsh \
-        git \
-        curl \
-        wget \
-        chezmoi \
-        neovim \
-        tmux \
-        lazygit \
-        zoxide \
-        tealdeer \
-        eza \
-        fzf \
-        bitwarden \ 
-        gpg \
-        pass
-
-fi
-
-# ------------------------------------------------------
-# Arch Linux packages 
-# ------------------------------------------------------
-if command -v pacman >/dev/null 2>&1; then
-    log_header "Installing Arch Linux packages"
-    # sudo cachyos-rate-mirrors
-    sudo pacman -Syu \
-        zsh \
-        git \
-        curl \
-        wget \
-        chezmoi \
-        neovim \
-        tmux \
-        lazygit \
-        zoxide \
-        tealdeer \
-        eza \
-        fzf \
-        gpg \
-        pass
-
-
-    systemctl --user enable --now ssh-agent.service
-fi
-
 # ------------------------------------------------------
 # Shell setup
 # ------------------------------------------------------
-log_header "Univeral setup"
-
 # Install Oh My Zsh 
 if [ -d "$HOME/.oh-my-zsh" ]; then
     echo "Oh My Zsh already installed."
@@ -90,6 +28,8 @@ else
 fi
 
 
+
+
 # ------------------------------------------------------
 # Node setup
 # ------------------------------------------------------
@@ -99,4 +39,5 @@ fi
 # ------------------------------------------------------
 # Configs setup
 # ------------------------------------------------------
-chezmoi init --source ~/dotfiles --apply
+# chezmoi init --source ~/dotfiles --apply
+

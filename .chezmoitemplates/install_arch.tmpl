@@ -1,0 +1,22 @@
+# sudo cachyos-rate-mirrors
+sudo pacman -Syu \
+    zsh \
+    git \
+    curl \
+    wget \
+    chezmoi \
+    neovim \
+    tmux \
+    lazygit \
+    zoxide \
+    tealdeer \
+    opencode \
+    eza \
+    fzf \
+    docker \
+    docker-compose \
+    gpg \
+    pass \
+    nfs-utils
+
+systemctl --user enable --now ssh-agent.service

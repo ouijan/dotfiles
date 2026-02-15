@@ -10,21 +10,23 @@ return {
 			ensure_installed = {
 				-- LSPs
 				"lua-language-server",
-				"gopls",
-				"vtsls",
-				"eslint-lsp",
+				-- "gopls",
+				-- "vtsls",
+				-- "eslint-lsp",
 				-- "tailwindcss-language-server",
-				"angular-language-server",
-				"clangd",
+				-- "angular-language-server",
+				-- "clangd",
+
 				-- Formatters
-				"prettierd",
 				"stylua",
-				"goimports",
-				"golines",
-				"gofumpt",
+				-- "prettierd",
+				-- "goimports",
+				-- "golines",
+				-- "gofumpt",
 				-- "clang-format",
+
 				-- DAPs
-				"delve", -- Go debugger
+				-- "delve", -- Go debugger
 				-- "cppdbg", -- C/C++ debugger
 			},
 		},

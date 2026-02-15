@@ -1,0 +1,7 @@
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   template "install_darwin.tmpl" . -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{-   template "install_arch.tmpl" . -}}
+{{- end -}}
+
+{{-   template "install_universal.tmpl" . -}}
