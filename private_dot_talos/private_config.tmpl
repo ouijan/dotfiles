@@ -1,0 +1,10 @@
+context: homelab
+contexts:
+    homelab:
+        endpoints:
+            - 10.0.0.60
+        nodes:
+            - 10.0.0.60
+        ca: {{ .talos_ca }}
+        crt: {{ .talos_crt }}
+        key: {{ .talos_key }}
