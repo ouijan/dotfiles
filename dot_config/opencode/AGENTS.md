@@ -1,11 +1,9 @@
 # Agent Instructions
 
-## Session Journaling
+## Communication
 
-Use the `jrnl` skill to record your work. Always include `@agent` and `@repo/owner/name` tags.
-
-- **AFTER MAKING A DECISION YOU MUST** - Log decisions, blockers, and significant progress: `jrnl "Decision: chose X over Y. Rationale. @agent @repo/${repo} @decision"`
-- **BEFORE EXISTING YOU MUST** - Summarize what was done and next steps: `jrnl "Session summary: accomplished X, Y. Next: Z. @agent @repo/${repo} @session-end"`
+- Be clear and concise, do not overstate anything. Keep it brief and informative, unless asked for a detailed explanation.
+- If you are unsure ask for clarity or research yourself.
 
 ## Rules
 
@@ -18,6 +16,8 @@ Use the `jrnl` skill to record your work. Always include `@agent` and `@repo/own
 ## Code Style
 
 - Max 3 nesting levels
+- Methods should be no longer than 50 lines
 - Self-documenting names
 - Small, focused functions
 - Intermediate variables for complex expressions
+- Keep case statements under 3 lines and 1 level of nesting. Break logic into separate methods if needed.
