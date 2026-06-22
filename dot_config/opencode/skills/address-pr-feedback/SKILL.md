@@ -3,7 +3,7 @@ name: address-pr-feedback
 description: "Interactive PR review feedback resolution. Triages comments, groups related items, presents for human decision, then fixes/replies/resolves. Triggers: 'address PR feedback', 'resolve PR comments', 'handle review feedback', 'address review comments', 'fix PR feedback'."
 license: MIT
 metadata:
-  version: '0.1'
+  version: '0.2'
 ---
 
 # Address PR Feedback
@@ -181,31 +181,137 @@ Items are numbered sequentially across all sections (auto-fixable and needs-inpu
 
 - **STOP after presenting the triage.** Wait for the user's response.
 - Accept responses like:
-  - "go" / "proceed" / "fix them" → apply all auto-fixable, ask about needs-input one by one
+  - "walk through" / "walk me through" / "let's go through them" → enter Phase 3B guided walkthrough
+  - "go" / "proceed" / "fix them" → apply all auto-fixable, enter walkthrough for needs-input items
   - "skip 3, 7" → exclude those from auto-fix
   - "fix 5 by using X instead" → override the auto-fix approach for item 5
   - For needs-input items: "fix 8", "reply 9: we intentionally did X because Y", "skip 10"
   - "fix all" → apply auto-fixable AND attempt needs-input items using agent judgment
-- If the user provides direction for needs-input items inline (e.g., "fix 8 with a type guard, reply 9: intentional, skip 10"), process all at once.
-- If the user says "go" without addressing needs-input items, apply auto-fixes first, then present needs-input items one at a time.
+- If the user provides direction for needs-input items inline (e.g., "fix 8 with a type guard, reply 9: intentional, skip 10"), queue all decisions and skip to Phase 4.
+- Default: offer the guided walkthrough.
+
+**Prompt at end of triage report:**
+
+```markdown
+---
+
+**Ready to walk through each item?** I'll show you the code context, suggest possible fixes, and collect your decision for each one. Once we've gone through everything, I'll action all the changes in one go.
+
+Say **"walk through"** to go item-by-item, or provide decisions inline (e.g., "fix 3, skip 5, reply 8: intentional").
+```
+
+---
+
+### Phase 3B: Guided Walkthrough
+
+Present each item (auto-fixable and needs-input) one at a time. For auto-fixable items, present them briefly with the proposed fix for confirmation. For needs-input items, provide deeper context and possible solutions.
+
+#### 3B.1. Item presentation format
+
+For each item, present:
+
+```markdown
+### Item {N}/{total}: [{title}]({html_url}) — {reviewer_icon} @{reviewer}
+
+**Comment:**
+> {full comment body}
+
+**File:** `{path}:{line}` | [View on GitHub]({html_url})
+
+**Code context:**
+```{lang}
+{±15 lines of surrounding code, with the commented line highlighted}
+```
+
+**Analysis:** {2-3 sentence explanation of what the reviewer is asking for and why}
+
+**Suggested approaches:**
+1. {Best approach} — {brief rationale}
+2. {Alternative approach} — {brief rationale}
+3. Reply with justification — {draft reply if current code is intentional}
+
+**Your call:** **fix** (pick 1-3 or describe your own), **reply** (with message), or **skip**
+```
+
+#### 3B.2. Interaction per item
+
+- **STOP after each item.** Wait for the user's decision.
+- Accept:
+  - "1" / "2" / "3" → select that suggested approach
+  - "fix" / "fix it" → use suggested approach 1 (the recommended one)
+  - "fix: {custom direction}" → use the user's direction instead
+  - "reply: {message}" → queue a reply with the user's message
+  - "skip" → skip this item entirely
+  - "skip rest" → skip all remaining items
+- Record each decision in an internal queue. Do NOT execute anything yet.
+
+#### 3B.3. After all items
+
+Present a confirmation summary of queued actions:
+
+```markdown
+## Queued Actions — {n} items
+
+| # | Item | Action | Detail |
+|---|---|---|---|
+| 1 | Rename `foo` to `bar` | Fix | Apply suggestion |
+| 3 | Error handling approach | Fix | Add try/catch per approach 2 |
+| 5 | Why no memoization? | Reply | "Intentional — values change every render" |
+| 7 | Extract helper | Skip | — |
+
+**Ready to execute?** Say **"go"** to action all queued items, or adjust (e.g., "change 3 to skip").
+```
+
+- **STOP.** Wait for final confirmation before executing.
 
 ---
 
 ### Phase 4: Execute
 
-Process items in **file order** to avoid edit conflicts.
+#### 4A. Delegate fixes to sub-agents
 
-#### 4A. Apply fixes
+Group queued fixes by file. For each file (or group of related files), delegate to a sub-agent:
 
-For each approved fix:
+```
+task(
+  category="quick",
+  description="Apply PR feedback fix: {item_title}",
+  prompt="
+    1. TASK: Apply the following fix to {path}
+    2. EXPECTED OUTCOME: {description of fix, code context, exact change}
+    3. REQUIRED TOOLS: Read, Edit, lsp_diagnostics
+    4. MUST DO:
+       - Read the file first
+       - Apply the change as described
+       - If suggestion block: apply verbatim
+       - If grouped pattern: apply across all listed locations
+       - If custom direction: follow exactly
+       - Run lsp_diagnostics on the changed file — must be clean
+    5. MUST NOT DO:
+       - Do NOT modify unrelated code
+       - Do NOT reformat or refactor beyond the fix
+       - Do NOT commit or push
+    6. CONTEXT: {diff_hunk, comment body, surrounding code, user's chosen approach}
+  "
+)
+```
 
-1. Read the full file
-2. If comment contains ` ```suggestion ` block → apply the suggestion directly
-3. If grouped pattern (e.g., "use `toMoment`") → apply consistently across all listed locations
-4. If user provided custom direction → follow that direction
-5. Track all modified files
+**Parallelism rules:**
+- Fixes on **different files** → delegate in parallel
+- Fixes on the **same file** → delegate sequentially (avoid edit conflicts)
+- After each delegation, verify the sub-agent's result: read the changed file, confirm the fix matches intent
 
-#### 4B. Commit and push
+#### 4B. Verify all changes
+
+After all sub-agents complete:
+
+1. Run `lsp_diagnostics` on every modified file
+2. If any errors were introduced → fix or revert and report to user
+3. Confirm total set of modified files matches expectations
+
+#### 4C. Commit and push
+
+Only after all fixes pass verification:
 
 ```bash
 git add <list of modified files>
@@ -218,9 +324,9 @@ fi
 
 Stage only modified files — never `git add -A`.
 
-#### 4C. Reply to threads
+#### 4D. Reply to threads
 
-For each addressed thread, reply to the **root comment** (`in_reply_to_id == null`):
+After push succeeds, reply to each addressed thread's **root comment** (`in_reply_to_id == null`):
 
 ```bash
 gh api repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments/{root_comment_id}/replies \
@@ -242,9 +348,9 @@ Response templates:
 
 **Rate limiting**: 1-second delay between replies if >10 comments.
 
-#### 4D. Resolve threads
+#### 4E. Resolve threads
 
-Resolve threads **only where a fix was implemented**. Do NOT resolve threads where we only replied with justification — let the reviewer verify.
+Resolve threads **only where a fix was implemented and pushed**. Do NOT resolve threads where we only replied with justification — let the reviewer verify.
 
 ```bash
 gh api graphql -f query='

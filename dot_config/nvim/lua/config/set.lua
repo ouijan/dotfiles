@@ -3,6 +3,8 @@ vim.o.termguicolors = true
 vim.g.have_nerd_font = true
 vim.g.winborder = "solid"
 
+vim.g.editorconfig = true
+
 -- -- Terminal title - updates dynamically with git branch
 -- -- tmux uses #{pane_title} for automatic-rename which picks this up
 -- vim.opt.title = true
