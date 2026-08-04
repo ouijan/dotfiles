@@ -1,0 +1,39 @@
+[keys]
+# Match tmux leader (ctrl+s)
+prefix = "ctrl+s"
+
+# Splits: tmux | and - (open in current dir is herdr default behavior)
+split_vertical = ["prefix+v"]
+split_horizontal = ["prefix+minus"]
+
+# Pane navigation: prefix+hjkl (default) plus direct ctrl+alt chords
+# (herdr can't do vim-aware ctrl+hjkl passthrough like vim-tmux-navigator)
+focus_pane_left = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up = ["prefix+k", "ctrl+alt+k"]
+focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+
+# herdr-plus plugin actions
+[[keys.command]]
+key = "prefix+shift+p"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.projects"
+description = "herdr-plus: projects"
+
+[[keys.command]]
+key = "prefix+a"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.quick-actions"
+description = "herdr-plus: quick actions"
+
+[theme]
+# Catppuccin mocha, matching tmux status colors
+name = "catppuccin"
+
+[theme.custom]
+accent = "#89b4fa"
+green = "#a6e3a1"
+blue = "#89b4fa"
+
+[ui]
+agent_panel_sort = "spaces"

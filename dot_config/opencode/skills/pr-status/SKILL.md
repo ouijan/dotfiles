@@ -1,24 +1,14 @@
 ---
 name: pr-status
-description: "Generate a PR and task status report for the current user across a GitHub org and optional ClickUp workspace. Auto-detects the org from the current repo or asks. Supports full, brief, and auto-resolve modes. Triggers: 'status report', 'pr status', 'what should I work on', 'my PRs', 'standup report', 'brief status'."
+description: "Generate a PR and task status report for the current user across a GitHub org and optional ClickUp workspace. Auto-detects the org from the current repo or asks. Ends with a numbered quick-action menu. Triggers: 'status report', 'pr status', 'what should I work on', 'my PRs', 'standup report', 'brief status'."
 license: MIT
 metadata:
-  version: '0.6'
+  version: '1.0'
 ---
 
 # PR Status Report
 
-Generate a status report of pull requests and tasks for the current user across a GitHub organisation and optionally the connected ClickUp workspace.
-
-## Modes
-
-This skill supports three modes, selected by the caller:
-
-| Mode | When | Output |
-|------|------|--------|
-| **full** (default) | Start of day, first run | Complete report with all buckets, ClickUp tasks, and next steps |
-| **brief** | Subsequent runs during the day | Only actionable items — skip stale, skip drafts without issues, skip empty buckets |
-| **auto-resolve** | When user wants agent-assisted fixes | Run full report, then identify and delegate automatable actions |
+Generate a status report of pull requests and tasks for the current user across a GitHub organisation and optionally the connected ClickUp workspace. The report ends with a numbered quick-action menu the user can invoke by typing a number.
 
 ## Hard Preconditions
 
@@ -118,26 +108,6 @@ For any PR where a reviewer's most recent review is `CHANGES_REQUESTED`, check w
 
 **Why this matters:** GitHub does not automatically clear the `CHANGES_REQUESTED` state when new commits are pushed. Without this check, PRs where the author has already addressed feedback are incorrectly classified as "Action Required From You" when they should be "Blocked on Others — awaiting re-review".
 
-### Phase 2.6: Detect Auto-Fixable Review Comments (auto-resolve mode only)
-
-In auto-resolve mode, for PRs with `CHANGES_REQUESTED` reviews (both addressed and unaddressed), fetch the inline review comments:
-
-```bash
-gh api repos/{owner}/{repo}/pulls/{number}/comments \
-  --jq '[.[] | {id: .id, author: .user.login, body: .body, path: .path, in_reply_to_id: .in_reply_to_id, created_at: .created_at}]'
-```
-
-Classify each unresolved review comment into:
-
-| Category | Detection | Example |
-|----------|-----------|---------|
-| **GitHub suggestion** | Body contains ` ```suggestion ` code block | Reviewer offered exact replacement code |
-| **Trivial refactor** | Body suggests a simple rename, extract, or one-line change with clear before/after | "Use `X` instead of `Y`" with code snippet |
-| **Question / discussion** | Body asks a question or raises a design concern without a concrete code change | "I wonder if...", "Should we consider..." |
-| **Complex change** | Body requests architectural or multi-file changes | "Consider splitting this PR", "Add error handling for X, Y, Z" |
-
-Tag each PR with a summary: `{N} suggestion(s), {N} trivial, {N} question(s), {N} complex`. This feeds into Phase 6 auto-resolve.
-
 ### Phase 3: ClickUp Cross-Reference (PR-linked only)
 
 Skip this phase entirely if ClickUp MCP tools are not available.
@@ -179,12 +149,6 @@ PRs you authored where:
 
 Display these separately from Bucket 1 with a distinct label so the user knows no further action is needed — they are waiting for the reviewer to re-review.
 
-In the report, show these under **"Addressed — Awaiting Re-review"** between "Action Required" and "Ready to Merge":
-
-| PR | Addressed For | Commits Since Review | ClickUp |
-|---|---|---|---|
-| [#N](url) — **title** | `reviewer` | N commits since review | [Task](cu_url) |
-
 #### Bucket 2: Ready to Merge
 PRs you authored where ALL of:
 - At least one `APPROVED` review
@@ -206,12 +170,26 @@ PRs by others where your review is requested or you're in the `involves` set but
 #### Bucket 5: Draft / WIP
 Your draft PRs. Include CI status and conflict state.
 
-#### Bucket 6: Stale (full mode only)
+#### Bucket 6: Stale
 PRs not updated in 60+ days. One line each.
 
 ### Phase 5: Generate Report
 
-#### Full Mode Template
+Use **list format** (not tables) for all report output. Each PR is a bullet with the title as the leading text, the PR link immediately after, and context details on the same line or indented below. This is optimised for terminal readability and clickable links.
+
+Standard markdown links `[text](url)` are clickable in the Ghostty+tmux+OpenCode TUI stack. Always use this format for PR links and ClickUp links.
+
+#### Item Format (all buckets)
+
+Every PR item follows this structure:
+
+```
+- **{title}** [#{N}]({url})
+  {context line — varies per bucket}
+  {ClickUp line — only if linked}
+```
+
+#### Report Template
 
 ```markdown
 # PR Status Report — {name}
@@ -221,178 +199,187 @@ PRs not updated in 60+ days. One line each.
 
 ## Action Required From You
 
-| PR | Issue | What To Do | ClickUp |
-|---|---|---|---|
-| [#N](url) — **title** | Changes requested by X | Address feedback | [Task](cu_url) |
+- **title** [#N](url)
+  Changes requested by `reviewer` · CI: passing
+  [CU: task name](cu_url)
+
+- **title** [#N](url)
+  Merge conflicts · CI: Lint failing, Build failing
 
 ## Addressed — Awaiting Re-review
 
-| PR | Addressed For | Commits Since Review | ClickUp |
-|---|---|---|---|
-| [#N](url) — **title** | `reviewer` | N commits since review | [Task](cu_url) |
+- **title** [#N](url)
+  Addressed `reviewer`'s feedback · N commits since review · waiting X days
+  [CU: task name](cu_url)
 
 ## Ready to Merge
 
-| PR | Approvals | Notes | ClickUp |
-|---|---|---|---|
-| [#N](url) — **title** | X, Y approved | CI green | [Task](cu_url) |
+- **title** [#N](url)
+  Approved by `reviewer1`, `reviewer2` · CI green
+  [CU: task name](cu_url)
 
 ## Blocked on Others
 
-| PR | Waiting On | How Long | ClickUp |
-|---|---|---|---|
-| [#N](url) — **title** | `reviewer` | X days | [Task](cu_url) |
+- **title** [#N](url)
+  Waiting on `reviewer` · X days
+  [CU: task name](cu_url)
 
 ## Awaiting Your Review
 
-| PR | Author | Age | Notes |
-|---|---|---|---|
-| [#N](url) — **title** | `author` | X days | — |
+- **title** [#N](url) by `author`
+  X days old · CI green · no reviews yet
 
 ## Draft / WIP
 
-| PR | CI | Conflicts | Updated | ClickUp |
-|---|---|---|---|---|
-| [#N](url) — **title** | Pass/Fail | Yes/No | X days ago | [Task](cu_url) |
+- **title** [#N](url)
+  CI: Pass · No conflicts · updated X days ago
+  [CU: task name](cu_url)
 
 ## Stale PRs (60+ days inactive)
 
-N stale PRs: #N (title), #N (title), ...
+- **title** [#N](url) · X months inactive
+- **title** [#N](url) · X months inactive
 
 ---
 
-## Next Steps
+## Quick Actions
 
-**Do Now:**
-1. {specific action referencing PR # and person}
+Type a number to execute, multiple numbers separated by commas (e.g. `1,3,5`), or `all safe` to run all non-destructive actions.
 
-**Follow Up:**
-1. Chase {person} for re-review on #{N} ({X} days since you addressed their feedback)
-2. Chase {person} for review on #{N} ({X} days waiting)
+**Recommended:** {single highest-priority action with brief rationale}
 
-**Housekeeping:**
-1. Close/rebase stale PRs, complete overdue reviews
+{N}. `address {reviewer}'s feedback on #{N}` — {PR title} ({reason})
+{N}. `update branch on #{N}` — {PR title} (behind master, CI green)
+{N}. `review #{N}` — {PR title} by `author` ({X} days old)
+{N}. `chase {reviewer} for re-review on #{N}` — {PR title} ({X} days waiting)
+{N}. `chase {reviewer} for review on #{N}` — {PR title} ({X} days waiting)
+{N}. `fix CI on #{N}` — {PR title} ({failing checks})
+{N}. `merge #{N}` — {PR title} (approved, CI green) ⚠️ confirm
+{N}. `rebase #{N} onto master` — {PR title} (conflicts) ⚠️ confirm
+{N}. `close #{N}` — {PR title} ({X} months stale) ⚠️ confirm
 ```
 
-#### Brief Mode Template
+### Phase 5.5: Auto-Execute Safe Actions
 
-Only show non-empty buckets 1-4 (including 1b). No stale section. No ClickUp details (just inline links). No full Next Steps — just a numbered action list:
+After generating the report, automatically execute actions that are always safe and non-destructive. Do NOT wait for user input for these.
 
-```markdown
-# Status Brief — {name} | {date}
-
-## Do Now
-1. #N — Address {reviewer}'s changes ([ClickUp](url))
-2. #N — Fix merge conflicts
-
-## Addressed — Awaiting Re-review
-- #N — Addressed `reviewer`'s feedback (N commits since review) ([ClickUp](url))
-
-## Merge Ready
-- #N — **title** (approved by X)
-
-## Blocked
-- #N — Waiting on `reviewer` (X days)
-
-## Review Queue
-- #N by `author` (X days)
-```
-
-### Phase 5.5: Auto-Update Merge-Ready PRs (ALL modes)
-
-After generating the report in ANY mode (full, brief, or auto-resolve), automatically update branches for PRs in the "Ready to Merge" bucket that are behind master.
+**Auto-execute: update branches on Ready to Merge PRs that are behind master.**
 
 1. Identify all PRs in the "Ready to Merge" bucket where `mergeStateStatus` is `BEHIND` and `mergeable` is `MERGEABLE`.
 2. For each, run: `gh pr update-branch {number} --repo {nameWithOwner}`
-3. Append a summary to the bottom of the report:
+3. Append results to the bottom of the report:
 
 ```
 **Auto-updated branches:**
-- #N — updated to latest master ✓
+- #N — **title** updated to latest master ✓
 ```
 
-This is safe because the PR is fully approved, CI was green, and `gh pr update-branch` is non-destructive (GitHub creates a merge commit; if it causes conflicts the API errors and no changes are made). No confirmation needed.
+This is safe because the PR is fully approved, CI was green, and `gh pr update-branch` is non-destructive (GitHub creates a merge commit; if it causes conflicts the API errors and no changes are made).
 
 If no PRs qualify, skip this section silently.
 
-### Phase 6: Auto-Resolve Mode (when requested)
+### Phase 5.6: Quick Action Menu Construction
 
-After generating the full report, scan for self-resolvable blockers and act on them.
+Build the numbered quick-action menu for the end of the report. Items are ordered by priority:
 
-#### Self-Resolvable Blockers
+1. **Address unaddressed review feedback** — PRs in Bucket 1 with `CHANGES_REQUESTED`
+2. **Fix CI failures** — PRs in Bucket 1 with failing checks
+3. **Resolve merge conflicts** — PRs in Bucket 1 with `CONFLICTING`
+4. **Review PRs from others** — PRs in Bucket 4, sorted by age (oldest first)
+5. **Chase for re-review** — PRs in Bucket 1b, sorted by wait time (longest first)
+6. **Chase for review** — PRs in Bucket 3, sorted by wait time (longest first)
+7. **Update branches** — PRs behind master (that weren't auto-updated in Phase 5.5)
+8. **Merge ready PRs** — PRs in Bucket 2 (marked ⚠️ confirm)
+9. **Close stale PRs** — PRs in Bucket 6 (marked ⚠️ confirm)
 
-The following blocker types can be identified and resolved by agents. This list is intended to grow over time as patterns prove reliable.
+Each item is a single line: `{N}. {action in backticks} — {PR title} ({brief context})`
 
----
+Add a ⚠️ confirm suffix to destructive actions (merge, close, rebase).
 
-**Branch behind master**
+Add a **Recommended** line above the numbered list picking the single highest-priority action with a one-line rationale. Priority: freshest unaddressed review feedback > CI failures > overdue reviews from others > longest-waiting chase.
 
-- Detected when: `mergeStateStatus` is `BEHIND` and `mergeable` is `MERGEABLE`
-- Resolution: `gh pr update-branch {number} --repo {nameWithOwner}`
-- Safety: Non-destructive. GitHub creates a merge commit on the PR branch. If it causes conflicts the API will error and no changes are made.
-- Auto-execute: Yes, no confirmation needed.
+#### `all safe` shortcut
 
----
+When the user types `all safe`, execute all items that do NOT have the ⚠️ confirm suffix. This includes:
+- `update branch` actions
+- `chase` actions (re-request review + post nudge comment)
 
-**GitHub suggestion comments on review**
+It does NOT include: `address feedback`, `fix CI`, `review`, `merge`, `rebase`, `close` — these require human judgment or branch checkout.
 
-- Detected when: Phase 2.6 found review comments containing ` ```suggestion ` code blocks that have not been resolved (no reply with "Fixed" or similar, and the suggestion hasn't been applied via GitHub's "Apply suggestion" button)
-- Resolution: Delegate to a sub-agent with the `pr-review` skill:
-  ```
-  task(category="quick", load_skills=["pr-review"], prompt="Apply the following GitHub suggestion comments on PR #{number} in {repo}. For each suggestion, apply the exact code change proposed. Do NOT address comments that are questions or architectural concerns — only apply concrete code suggestions. Suggestions to apply: {list of suggestion comment IDs and their content}")
-  ```
-- Safety: GitHub suggestions are exact code replacements proposed by the reviewer. Applying them is equivalent to the reviewer making the change themselves. The sub-agent should commit each suggestion as a separate commit with message `fix: apply {reviewer}'s suggestion in {filename}`. CI will re-run after push.
-- Auto-execute: No (needs confirmation). Present the list of suggestions to the user and ask "Apply these N suggestions from {reviewer}?" before delegating.
+Report results as a summary:
 
----
+```
+**Executed N safe actions:**
+- ✓ Updated branch on #N — **title**
+- ✓ Chased `reviewer` for re-review on #N — **title**
+- ✓ Chased `reviewer` for review on #N — **title**
+```
 
-**Trivially-fixable review comments**
+### Phase 5.7: Action Dispatch
 
-- Detected when: Phase 2.6 classified comments as "trivial refactor" — single-file, clear before/after, no design ambiguity
-- Resolution: Delegate to a sub-agent with appropriate coding skills:
-  ```
-  task(category="quick", load_skills=["typescript-coding-standards", "angular-coding-standards"], prompt="Address the following trivial review comment on PR #{number}: {comment body}. File: {path}. Make the minimal change requested. Do not refactor beyond what was asked.")
-  ```
-- Safety: Trivial changes by definition are low-risk. The sub-agent is instructed to make minimal changes. CI will validate.
-- Auto-execute: No (needs confirmation). Present each trivial fix to the user for approval before delegating.
+After generating the report, the user may type a number, multiple numbers, `all safe`, or any action phrase as a follow-up prompt. The agent MUST recognise these and dispatch them.
 
----
+#### Input Formats
 
-<!-- Add new self-resolvable blocker types below this line -->
-<!-- Template:
-**Blocker Name**
+| User input | Behaviour |
+|---|---|
+| `1` | Execute quick action #1 |
+| `1,3,5` | Execute quick actions #1, #3, #5 sequentially |
+| `all safe` | Execute all non-destructive actions |
+| `address feedback on #5982` | Fuzzy match — dispatch directly |
+| `chase all` | Chase all reviewers across Blocked + Addressed buckets |
 
-- Detected when: {how to identify from Phase 2 data}
-- Resolution: {exact commands or agent delegation steps}
-- Safety: {why this is safe / what could go wrong / rollback}
-- Auto-execute: Yes (safe) / No (needs confirmation) / Never
--->
+#### Dispatch Table
 
-#### Never Auto-Resolve
+| Action pattern | Execution |
+|---|---|
+| `address {reviewer}'s feedback on #{N}` | Invoke the `address-pr-feedback` skill: `task(category="quick", load_skills=["address-pr-feedback"], prompt="/address-pr-feedback {N}")`. NOTE: requires checking out the PR branch first — run `gh pr checkout {N}` before invoking. If working tree is dirty, warn and ask the user to stash first. |
+| `show review comments on #{N}` | Fetch and display review comments inline: `gh api repos/{owner}/{repo}/pulls/{N}/comments --jq '[.[] | {author: .user.login, body: .body, path: .path, line: .line, html_url: .html_url}]'`. Format as a readable list with file paths and comment bodies. |
+| `fix CI on #{N}` | Check out the PR branch (`gh pr checkout {N}`), fetch the CI failure details from `statusCheckRollup`, identify failing jobs (Lint/Build/Test/E2E), examine the Nx Cloud links or run the failing targets locally, then fix. Delegate: `task(category="quick", load_skills=["typescript-coding-standards", "angular-coding-standards"], prompt="Fix CI failures on PR #{N}. Failing checks: {list}. Check out the branch, diagnose, fix, and verify with lsp_diagnostics.")` |
+| `rebase #{N} onto master` | Run `gh pr checkout {N} && git rebase origin/master`. If conflicts arise, present them to the user. If clean, `git push --force-with-lease`. ⚠️ Confirm first. |
+| `chase {reviewer} for re-review on #{N}` | Re-request review: `gh pr edit {N} --add-reviewer {reviewer}`. Then post a comment: `gh pr comment {N} --body "@{reviewer} I've addressed your feedback — could you take another look when you get a chance?"` |
+| `chase {reviewer} for review on #{N}` | Request review: `gh pr edit {N} --add-reviewer {reviewer}`. Then post a comment: `gh pr comment {N} --body "@{reviewer} This PR is ready for review when you have a moment."` |
+| `chase all` | Execute all `chase` actions from the quick-action menu. Batch re-request + comment for each reviewer/PR pair. |
+| `merge #{N}` | ⚠️ Confirm with user first ("Merge #N into master?"), then: `gh pr merge {N} --squash --delete-branch`. |
+| `update branch on #{N}` | Run `gh pr update-branch {N} --repo {nameWithOwner}`. Safe, no confirmation needed. |
+| `review #{N}` | Check out the PR branch, show the diff summary (`gh pr diff {N} --stat`), then walk through changed files. Delegate: `task(category="unspecified-high", load_skills=["pr-review"], prompt="Review PR #{N} in {repo}. Fetch the diff, analyze changes, and post a review.")` |
+| `show diff for #{N}` | Run `gh pr diff {N}` and display the output. |
+| `close #{N}` | ⚠️ Confirm with user first ("Close #N? This will NOT delete the branch."), then: `gh pr close {N}`. |
 
-- Merge PRs (always requires human decision)
-- Dismiss reviews
-- Delete branches with unmerged work
-- Close PRs
+#### Dispatch Rules
 
-#### Auto-Resolve Execution Flow
-
-1. Generate the full report first.
-2. Scan all PRs for self-resolvable blockers listed above.
-3. For each match, report what will be done: "PR #N is behind master — running `gh pr update-branch`".
-4. Execute all auto-safe actions.
-5. If any actions require confirmation, present them as a numbered list and wait for the user to approve.
-6. Report results: success/failure per action.
+1. **Pattern matching is fuzzy** — the user may type `address the0rem's feedback on 5982` or `address feedback on #5982` or `fix the review on 5982`. Match on the PR number and the intent verb (address/fix/chase/merge/close/review/rebase/update/show).
+2. **Branch safety** — any action that requires a branch checkout MUST check `git status --porcelain` first. If dirty, warn: "Working tree has uncommitted changes. Stash or commit first?" and stop.
+3. **Confirmation for destructive actions** — `merge`, `close`, and `rebase` always require explicit user confirmation before executing.
+4. **Skill delegation** — when dispatching to `address-pr-feedback`, pass the PR number as the argument. The skill handles everything from there (fetch, classify, triage, walk through, fix, reply, resolve).
+5. **Chaining** — the user may request multiple actions in one message (e.g., `1,3` or "update branch on #5987 and address feedback on #5982"). Execute them sequentially, reporting results between each.
+6. **Post-action status** — after each action completes, show a one-line status transition: `✓ #N — was "Action Required" → now "Addressed — Awaiting Re-review"`. Re-check the PR's actual state via `gh pr view` to confirm.
 
 ## Output Rules
 
+### Formatting
+- Use **list format** (bullets), never tables. Tables render poorly in terminal TUIs.
+- Lead each item with `**title**` in bold — the PR title is the most important context.
+- Immediately follow the title with `[#N](url)` — a clickable markdown link.
+- Put status details (CI, reviewer, age) on the same line or indented below.
+- Use standard markdown links `[text](url)` for all URLs — they render as clickable hyperlinks in Ghostty/tmux/OpenCode.
+- ClickUp links go on their own indented line: `[CU: task name](cu_url)`.
+
+### Content
 - Lead with "Action Required From You" — the user's most urgent items.
 - Never bury merge conflicts or failing CI below less urgent sections.
 - Use relative time ("3 days", "6 weeks") not absolute timestamps.
-- Keep stale PR listings to one line each.
-- "Next Steps" must be concrete: "Address {reviewer}'s review on #{N}" not "Review open PRs".
+- Stale PRs get one bullet each with title, link, and inactivity duration.
 - If no items exist for a bucket, omit that section entirely.
 - Do not include PR body text or full review comments — just the review verdict and reviewer name.
-- When referencing people, use their GitHub username.
-- Include ClickUp links inline where available, not in a separate section (brief mode).
-- If reporting across multiple repos in the org, group by repo only if there are PRs in more than one repo. Otherwise omit the repo column.
+- When referencing people, use their GitHub username in backticks.
+- Include ClickUp links inline where available, not in a separate section.
+- If reporting across multiple repos in the org, group by repo only if there are PRs in more than one repo. Otherwise omit the repo grouping.
+
+### Quick Actions Menu
+- Always end the report with the **Quick Actions** section.
+- Always include a **Recommended** line above the numbered list.
+- Number items sequentially starting from 1.
+- Mark destructive actions with ⚠️ confirm.
+- Keep each item to one line: number, action in backticks, PR title, brief context in parens.
+- The menu replaces the old "Next Steps" and "Actions" lines on individual items — do NOT include per-item Actions lines in the bucket listings.

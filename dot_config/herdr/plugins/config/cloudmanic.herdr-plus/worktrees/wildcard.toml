@@ -1,0 +1,15 @@
+# Wildcard worktree auto-layout: applies to any repo without a specific layout.
+# Fires on `herdr worktree create/open`. Filename doesn't matter; presence = on.
+# Specificity: repo+branch > repo > wildcard+branch > wildcard(this).
+repo = "*"
+
+[[tabs]]
+name = "agent"
+command = "pi"
+
+[[tabs]]
+name = "lazygit"
+command = "lazygit"
+
+[[tabs]]
+name = "terminal"   # no command — just an empty shell

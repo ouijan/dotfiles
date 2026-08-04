@@ -1,0 +1,25 @@
+{
+  "lastChangelogVersion": "0.83.0",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-5",
+  "defaultThinkingLevel": "medium",
+  "theme": "catppuccin",
+  "skills": [
+    "~/.config/opencode/skills"
+  ],
+  "packages": [
+    "npm:pi-claude-auth",
+    "npm:pi-mcp-adapter"
+  ],
+  "warnings": {
+    "anthropicExtraUsage": false
+  },
+  "enabledModels": [
+    "anthropic/claude-fable-5",
+    "anthropic/claude-haiku-4-5",
+    "anthropic/claude-opus-4-8",
+    "anthropic/claude-opus-5",
+    "anthropic/claude-sonnet-4-6",
+    "anthropic/claude-sonnet-5"
+  ]
+}

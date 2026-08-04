@@ -1,0 +1,20 @@
+# principle-theorem — the .bare + one-dir-per-branch repo (95% of structured work).
+#
+# herdr reports the repo name as the parent folder "principle-theorem" (the
+# bare-repo root's basename), so match that. Repo-only beats the wildcard.
+# Narrow to a branch with `branch = "..."` if wanted.
+#
+# Fires on `herdr worktree open/create` (CLI or the TUI worktree dialog) for any
+# existing or new worktree — no migration of your dirs needed.
+repo = "principle-theorem"
+
+[[tabs]]
+name = "agent"
+command = "opencode"
+
+[[tabs]]
+name = "git"
+command = "lazygit"
+
+[[tabs]]
+name = "terminal"   # no command — just an empty shell

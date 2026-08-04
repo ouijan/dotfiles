@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "clickup": {
+      "url": "https://mcp.clickup.com/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy"
+    }
+  }
+}

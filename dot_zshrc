@@ -91,10 +91,26 @@ alias lt="eza -TL 2 --icons"
 # Git aliases
 alias lg="lazygit"
 
+# Kubernetes aliases
+alias k="kubectl"
+
+# AI Aliases
+alias pi-principle='AGENTMEMORY_AGENT_ID=principle pi'
+alias pi-ouijan='AGENTMEMORY_AGENT_ID=ouijan pi'
+alias oc-principle='AGENTMEMORY_AGENT_ID=principle opencode'
+alias oc-ouijan='AGENTMEMORY_AGENT_ID=ouijan opencode'
+
+
 # -----------------------------------------------
 # CLI tools
 # -----------------------------------------------
 
+
+# agentmemory (memory server for coding agents / pi extension)
+export AGENTMEMORY_URL="https://agentmemory.tharris.cc:3111"
+export AGENTMEMORY_REQUIRE_HTTPS=1
+# AGENTMEMORY_SECRET lives in chezmoi-managed ~/.secrets.zsh (from Bitwarden)
+[ -f ~/.secrets.zsh ] && source ~/.secrets.zsh
 
 # Local bin scripts (cross-platform)
 export PATH="$HOME/.local/bin:$PATH"
@@ -150,6 +166,7 @@ autoload -Uz compinit
 compinit
 # End of Docker CLI completions
 
-# completions
+
+# zsh completions
 fpath=(~/.zsh/completions $fpath)
 autoload -U compinit && compinit

@@ -4,9 +4,10 @@
   "plugin": [
     "opencode-antigravity-auth@latest",
     "@ex-machina/opencode-anthropic-auth@1.8.0",
-    "oh-my-openagent@latest"
+    "oh-my-openagent@latest",
+    "./plugins/agentmemory-capture.ts"
   ],
-  "model": "github-copilot/claude-opus-4.7",
+  "model": "github-copilot/claude-opus-4.8",
   "mcp": {
     "fetch": {
       "enabled": true,
@@ -56,16 +57,28 @@
       "command": [
         "npx",
         "-y",
-        "@modelcontextprotocol/server-github",
-        "--GITHUB_PERSONAL_ACCESS_TOKEN",
-        "{{ .github_token }}"
-      ]
+        "@modelcontextprotocol/server-github"
+      ],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{{ .github_token }}"
+      }
+    },
+    "logrocket": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://mcp.logrocket.com/mcp?toolsets=all",
+      "oauth": {}
     },
     "clickup": {
       "enabled": true,
       "type": "remote",
       "url": "https://mcp.clickup.com/mcp",
       "oauth": {}
+    },
+    "agentmemory": {
+      "type": "local",
+      "command": ["npx", "-y", "@agentmemory/mcp"],
+      "enabled": true
     }
   }
 }

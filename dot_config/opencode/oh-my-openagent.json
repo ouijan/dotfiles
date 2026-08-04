@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "anthropic/claude-opus-4-6",
+      "model": "anthropic/claude-opus-4-8",
       "fallback_models": [
         {
           "model": "openrouter/moonshotai/kimi-k2.6"
@@ -38,7 +38,7 @@
           "variant": "high"
         },
         {
-          "model": "anthropic/claude-opus-4-7",
+          "model": "anthropic/claude-opus-4-8",
           "variant": "max"
         },
         {
@@ -99,7 +99,7 @@
       ]
     },
     "prometheus": {
-      "model": "anthropic/claude-opus-4-7",
+      "model": "anthropic/claude-opus-4-8",
       "variant": "max",
       "fallback_models": [
         {
@@ -118,7 +118,7 @@
       "model": "anthropic/claude-sonnet-4-6",
       "fallback_models": [
         {
-          "model": "anthropic/claude-opus-4-7",
+          "model": "anthropic/claude-opus-4-8",
           "variant": "max"
         },
         {
@@ -138,7 +138,7 @@
       "variant": "xhigh",
       "fallback_models": [
         {
-          "model": "anthropic/claude-opus-4-7",
+          "model": "anthropic/claude-opus-4-8",
           "variant": "max"
         },
         {
@@ -190,7 +190,7 @@
           "model": "openrouter/z-ai/glm-5"
         },
         {
-          "model": "anthropic/claude-opus-4-7",
+          "model": "anthropic/claude-opus-4-8",
           "variant": "max"
         },
         {
@@ -207,7 +207,7 @@
           "variant": "high"
         },
         {
-          "model": "anthropic/claude-opus-4-7",
+          "model": "anthropic/claude-opus-4-8",
           "variant": "max"
         },
         {
@@ -220,7 +220,7 @@
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "anthropic/claude-opus-4-7",
+          "model": "anthropic/claude-opus-4-8",
           "variant": "max"
         },
         {
@@ -240,7 +240,7 @@
       "variant": "high",
       "fallback_models": [
         {
-          "model": "anthropic/claude-opus-4-7",
+          "model": "anthropic/claude-opus-4-8",
           "variant": "max"
         },
         {

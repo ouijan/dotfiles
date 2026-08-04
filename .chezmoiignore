@@ -1,5 +1,26 @@
 # Repository files - not dotfiles
 README.md
+AGENTS.md
+
+# pi extensions dependencies - install on each machine
+.pi/agent/extensions/node_modules
+
+# herdr runtime state - machine-specific, not dotfiles.
+# Only config.toml and plugins/config/cloudmanic.herdr-plus/projects are managed.
+.config/herdr/*.log
+.config/herdr/*.sock
+.config/herdr/*.lock
+.config/herdr/session.json
+.config/herdr/sessions
+.config/herdr/plugins.json
+.config/herdr/plugins/*
+!.config/herdr/plugins/config
+.config/herdr/plugins/config/*
+!.config/herdr/plugins/config/cloudmanic.herdr-plus
+.config/herdr/plugins/config/cloudmanic.herdr-plus/*
+!.config/herdr/plugins/config/cloudmanic.herdr-plus/projects
+!.config/herdr/plugins/config/cloudmanic.herdr-plus/worktrees
+!.config/herdr/plugins/config/cloudmanic.herdr-plus/quick-actions
 
 {{- if ne .chezmoi.os "darwin" }}
 # macOS only
