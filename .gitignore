@@ -1,2 +1,7 @@
 # Secrets
 **/secrets/
+
+# Stray runtime dirs created inside the source dir (not chezmoi-managed)
+.omo/
+.pi/
+node_modules/

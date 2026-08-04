@@ -2,8 +2,15 @@
 README.md
 AGENTS.md
 
-# pi extensions dependencies - install on each machine
+# pi runtime state - machine-specific, not dotfiles.
+# Only settings.json, mcp.json, keybindings.json, themes and extensions are managed.
 .pi/agent/extensions/node_modules
+.pi/agent/auth.json
+.pi/agent/trust.json
+.pi/agent/models-store.json
+.pi/agent/claude-account-source.txt
+.pi/agent/sessions
+.pi/agent/npm
 
 # herdr runtime state - machine-specific, not dotfiles.
 # Only config.toml and plugins/config/cloudmanic.herdr-plus/projects are managed.

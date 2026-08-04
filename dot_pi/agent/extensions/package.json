@@ -1,0 +1,7 @@
+{
+  "name": "pi-extensions",
+  "private": true,
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  }
+}
