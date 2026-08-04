@@ -10,11 +10,21 @@ repo = "principle-theorem"
 
 [[tabs]]
 name = "agent"
-command = "opencode"
+
+  [[tabs.panes]]
+  command = "opencode"
+
+  [[tabs.panes]]
+  command = "nvim"
 
 [[tabs]]
 name = "git"
 command = "lazygit"
 
 [[tabs]]
-name = "terminal"   # no command — just an empty shell
+name = "terminal"   # two empty shells, side by side
+
+  [[tabs.panes]]
+
+  [[tabs.panes]]
+  split = "right"

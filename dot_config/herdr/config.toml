@@ -1,3 +1,4 @@
+onboarding = false
 [keys]
 # Match tmux leader (ctrl+s)
 prefix = "ctrl+s"
@@ -30,6 +31,7 @@ description = "herdr-plus: quick actions"
 # Catppuccin mocha, matching tmux status colors
 name = "catppuccin"
 
+auto_switch = false
 [theme.custom]
 accent = "#89b4fa"
 green = "#a6e3a1"
@@ -37,3 +39,7 @@ blue = "#89b4fa"
 
 [ui]
 agent_panel_sort = "spaces"
+show_agent_labels_on_pane_borders = true
+
+[ui.toast]
+delivery = "terminal"
