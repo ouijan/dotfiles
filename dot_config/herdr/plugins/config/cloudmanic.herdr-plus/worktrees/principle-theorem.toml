@@ -15,6 +15,7 @@ name = "agent"
   command = "opencode"
 
   [[tabs.panes]]
+  split = "right"
   command = "nvim"
 
 [[tabs]]

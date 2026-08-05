@@ -5,6 +5,8 @@ AGENTS.md
 # pi runtime state - machine-specific, not dotfiles.
 # Only settings.json, mcp.json, keybindings.json, themes and extensions are managed.
 .pi/agent/extensions/node_modules
+# installed & overwritten by herdr's pi integration - not source-tracked
+.pi/agent/extensions/herdr-agent-state.ts
 .pi/agent/auth.json
 .pi/agent/trust.json
 .pi/agent/models-store.json

@@ -43,3 +43,10 @@ show_agent_labels_on_pane_borders = true
 
 [ui.toast]
 delivery = "terminal"
+
+[ui.sound]
+enabled = true
+path = "/Users/tobyharris/Documents/sounds/undertakers-bell.mp3" # for general notifications
+done_path = "/Users/tobyharris/Documents/sounds/jobs-done.mp3" # for agent completions
+request_path = "/Users/tobyharris/Documents/sounds/work-work.mp3" # for agent requests
+

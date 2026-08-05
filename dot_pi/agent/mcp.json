@@ -4,6 +4,25 @@
       "url": "https://mcp.clickup.com/mcp",
       "auth": "oauth",
       "lifecycle": "lazy"
+    },
+    "logrocket": {
+      "url": "https://mcp.logrocket.com/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy"
+    },
+    "github": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "auth": "bearer",
+      "bearerToken": "!gh auth token",
+      "lifecycle": "lazy"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ],
+      "lifecycle": "lazy"
     }
   }
 }

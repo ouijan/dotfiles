@@ -170,3 +170,6 @@ compinit
 # zsh completions
 fpath=(~/.zsh/completions $fpath)
 autoload -U compinit && compinit
+
+# worktrunk shell integration (wt) - https://worktrunk.dev/config/#shell-integration
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
