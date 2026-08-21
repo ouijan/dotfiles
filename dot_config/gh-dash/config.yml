@@ -86,6 +86,9 @@ keybindings:
         - key: T
           name: tuicr review
           command: tuicr pr {{.RepoName}}#{{.PrNumber}}
+        - key: W
+          name: herdr workspace (worktree + tuicr + agent + nvim)
+          command: ~/.local/bin/herdr-pr-workspace {{.RepoName}} {{.PrNumber}}
 repoPaths: {}
 theme:
     ui:

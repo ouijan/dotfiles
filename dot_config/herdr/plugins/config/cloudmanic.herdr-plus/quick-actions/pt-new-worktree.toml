@@ -1,0 +1,14 @@
+# Type a branch name -> worktrunk creates the branch + worktree (running the
+# shared-symlink + pnpm install hooks), then herdr opens it as a workspace and
+# herdr-plus applies worktrees/principle-theorem.toml tabs.
+#
+# Input: "<branch>" or "<branch> <base>" (base defaults to the default branch).
+# Script: ~/.local/bin/herdr-new-worktree (source: dotfiles/private_dot_local/bin).
+name = "PT: new branch + worktree"
+type = "form"
+command = """
+~/.local/bin/herdr-new-worktree {{.Value}}
+"""
+
+[form]
+prompt = "New branch (optionally: <branch> <base>)"

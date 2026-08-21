@@ -1,0 +1,29 @@
+#!/bin/bash
+# $EDITOR for tuicr when it runs inside an nvim terminal buffer (see
+# ~/.config/nvim/lua/config/tuicr.lua).
+#
+# Pressing `e` in tuicr would normally spawn a nested nvim inside the review,
+# which nests forever. Instead this routes the file into the nvim that owns the
+# terminal, over the RPC socket nvim exports as $NVIM, and exits immediately.
+# tuicr then reloads its diff as if the editor had been closed.
+#
+# Outside nvim it degrades to a plain `nvim +LINE file`.
+set -euo pipefail
+
+line=1
+if [[ ${1:-} == +* ]]; then
+	line=${1#+}
+	shift
+fi
+[[ $line =~ ^[0-9]+$ ]] || line=1
+
+file=${1:-}
+[ -n "$file" ] || exit 0
+
+if [ -z "${NVIM:-}" ]; then
+	exec nvim "+$line" "$file"
+fi
+
+# Single quotes are the vimscript string delimiter; '' escapes one.
+escaped=${file//\'/\'\'}
+nvim --server "$NVIM" --remote-expr "v:lua.TuicrEdit('$escaped', $line)" >/dev/null

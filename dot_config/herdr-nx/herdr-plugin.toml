@@ -1,0 +1,24 @@
+# herdr-nx — overlay TUI to inspect and kill memory-hungry nx/pnpm build processes.
+# Chezmoi-managed (dotfiles: dot_config/herdr-nx). Registered via:
+#   herdr plugin link ~/.config/herdr-nx
+
+id = "toby.herdr-nx"
+name = "NX Processes"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Overlay TUI to inspect and kill memory-hungry nx/pnpm/angular build processes, grouped by worktree."
+platforms = ["macos"]
+
+# Action-menu entry (keybindable): opens the overlay pane below.
+[[actions]]
+id = "nx-processes"
+title = "NX: Processes"
+platforms = ["macos"]
+command = ["sh", "-c", "herdr plugin pane open --plugin toby.herdr-nx --entrypoint nx-picker --placement overlay --focus"]
+
+[[panes]]
+id = "nx-picker"
+title = "NX Processes"
+placement = "overlay"
+platforms = ["macos"]
+command = ["./nxtop"]

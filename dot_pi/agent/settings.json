@@ -1,16 +1,11 @@
 {
-  "lastChangelogVersion": "0.83.0",
+  "lastChangelogVersion": "0.84.2",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5",
   "defaultThinkingLevel": "medium",
   "theme": "catppuccin",
-  "skills": [
-    "~/.config/opencode/skills"
-  ],
-  "packages": [
-    "npm:pi-claude-auth",
-    "npm:pi-mcp-adapter"
-  ],
+  "skills": ["~/.config/opencode/skills"],
+  "packages": ["npm:pi-claude-auth", "npm:pi-mcp-adapter"],
   "warnings": {
     "anthropicExtraUsage": false
   },

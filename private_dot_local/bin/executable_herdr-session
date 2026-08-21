@@ -1,0 +1,172 @@
+#!/bin/bash
+# Fuzzy-pick an existing pi or opencode session and resume it in the current pane
+# (or a fresh split beside it when that pane is busy).
+#
+# Sources:
+#   pi:       ~/.pi/agent/sessions/*/*.jsonl (cwd from header, title from first user msg)
+#   opencode: ~/.local/share/opencode/opencode.db (session table)
+#
+# The session is resumed in the launch directory, not the directory it was
+# recorded in — that's how a session follows you from a repo into a new worktree.
+set -euo pipefail
+
+PI_SESSIONS="${PI_CODING_AGENT_SESSION_DIR:-$HOME/.pi/agent/sessions}"
+OPENCODE_DB="$HOME/.local/share/opencode/opencode.db"
+
+die() {
+	echo "herdr-session: $1" >&2
+	exit 1
+}
+
+# Emits: epoch \t agent \t target \t dir \t title \t date
+list_pi_sessions() {
+	local file epoch meta
+	for file in "$PI_SESSIONS"/*/*.jsonl; do
+		[ -e "$file" ] || continue
+		epoch=$(stat -f %m "$file")
+		meta=$(head -40 "$file" | jq -rs '
+			[
+				(.[0].cwd // "?"),
+				([.[] | select(.type == "message" and .message.role == "user")
+					| .message.content[]? | select(.type == "text") | .text]
+					| first // "untitled" | gsub("[\\t\\n]+"; " ") | .[0:80])
+			] | @tsv' 2>/dev/null) || continue
+		printf '%s\t%-8s\t%s\t%s\t%s\n' "$epoch" pi "$file" "$meta" \
+			"$(date -r "$epoch" '+%d/%m/%Y %H:%M')"
+	done
+}
+
+# Emits: epoch \t agent \t target \t dir \t title \t date
+list_opencode_sessions() {
+	[ -f "$OPENCODE_DB" ] || return 0
+	sqlite3 -separator $'\t' "$OPENCODE_DB" "
+		SELECT time_updated / 1000, 'opencode', id, directory,
+			replace(substr(title, 1, 80), char(9), ' '),
+			strftime('%d/%m/%Y %H:%M', time_updated / 1000, 'unixepoch', 'localtime')
+		FROM session
+		WHERE parent_id IS NULL AND time_archived IS NULL
+		ORDER BY time_updated DESC LIMIT 300;"
+}
+
+pick_session() {
+	{ list_pi_sessions; list_opencode_sessions; } |
+		sort -t $'\t' -rn -k1,1 |
+		format_rows |
+		fzf --delimiter '\t' --with-nth '6,2,5,7' --prompt 'session> ' \
+			--height 40% --header 'resume a pi or opencode session'
+}
+
+# Pads the title and appends a short dir (last 2 path segments) as field 7.
+format_rows() {
+	awk -F'\t' -v OFS='\t' '{
+		n = split($4, seg, "/")
+		short = (n > 1) ? seg[n - 1] "/" seg[n] : $4
+		$5 = sprintf("%-60.60s", $5)
+		print $0, short
+	}'
+}
+
+# The shell command that resumes the session, used only outside herdr (inside it,
+# start_agent launches the agent directly). It deliberately does not cd to the
+# session's original directory: the session adopts wherever you launched from, so
+# a session started in master can be carried into a fresh worktree. The agent is
+# not exec'd either, so its "resume with..." farewell survives in the pane.
+resume_command() {
+	local agent=$1 target=$2
+
+	case $agent in
+	pi) printf 'pi --session %q\n' "$target" ;;
+	opencode) printf 'opencode --session %q\n' "$target" ;;
+	*) die "unknown agent: $agent" ;;
+	esac
+}
+
+# A pane is free only when its shell is the foreground process group (no command
+# running) and herdr sees no agent occupying it. Typing into a busy pane would
+# feed the running program instead of starting a session.
+pane_is_free() {
+	local pane=$1 info occupant
+
+	info=$(herdr pane process-info --pane "$pane" 2>/dev/null) || return 1
+	[ "$(jq -r '.result.process_info
+		| .foreground_process_group_id == .shell_pid' <<<"$info")" = true ] || return 1
+
+	occupant=$(herdr pane get "$pane" 2>/dev/null | jq -r '.result.pane.agent // ""')
+	[ -z "$occupant" ]
+}
+
+# Wide panes split right, tall/narrow ones split down (herdr skill's geometry rule).
+split_direction() {
+	local pane=$1 rect
+	rect=$(herdr pane layout --pane "$pane" |
+		jq -r --arg pane "$pane" '.result.layout.panes[]
+			| select(.pane_id == $pane) | .rect | "\(.width) \(.height)"')
+
+	local width=${rect%% *} height=${rect##* }
+	[ "${width:-0}" -gt $((2 * ${height:-1})) ] && echo right || echo down
+}
+
+split_for_session() {
+	local pane=$1 launch_dir=$2 new cwd=()
+	[ -d "$launch_dir" ] && cwd=(--cwd "$launch_dir")
+	new=$(herdr pane split "$pane" --direction "$(split_direction "$pane")" \
+		${cwd[@]+"${cwd[@]}"} --focus | jq -r '.result.pane.pane_id')
+
+	[ -n "$new" ] && [ "$new" != null ] || die 'herdr pane split failed'
+	echo "$new"
+}
+
+# herdr spawns the agent as a real process in the pane and waits for it to be
+# interactively ready. Nothing is typed, so the shell's bracketed-paste state
+# cannot mangle the command into a literal ^[[200~ (the old failure mode).
+# A young pane may not be at its prompt yet, hence the retries.
+start_agent() {
+	local pane=$1 agent=$2 target=$3 attempt
+	local name=$agent$(date +%s)
+
+	for attempt in 1 2 3 4 5; do
+		herdr agent start "$name" --kind "$agent" --pane "$pane" \
+			-- --session "$target" >/dev/null 2>&1 && return 0
+		sleep 0.4
+	done
+	return 1
+}
+
+# Quick actions run in the herdr-plus picker's own shell, not the pane the user
+# launched from, so running the agent here would strand it in a throwaway
+# process. HERDR_PLUS_PANE_ID is the pane that was focused when the action fired:
+# resume into it when it's idle, otherwise into a fresh split beside it.
+dispatch_to_pane() {
+	local pane=$1 agent=$2 target=$3 launch_dir=$4
+
+	pane_is_free "$pane" || pane=$(split_for_session "$pane" "$launch_dir")
+	start_agent "$pane" "$agent" "$target" && return
+	herdr pane run "$pane" "$(resume_command "$agent" "$target")" >/dev/null
+}
+
+open_session() {
+	local agent=$1 target=$2
+	local launch_dir=${HERDR_PLUS_WORKDIR:-$PWD}
+
+	local pane=${HERDR_PLUS_PANE_ID:-${HERDR_PANE_ID:-}}
+	if [ -n "$pane" ] && command -v herdr >/dev/null 2>&1; then
+		dispatch_to_pane "$pane" "$agent" "$target" "$launch_dir"
+		return
+	fi
+
+	exec bash -c "$(resume_command "$agent" "$target")"
+}
+
+main() {
+	command -v fzf >/dev/null 2>&1 || die 'fzf not found in PATH'
+	command -v jq >/dev/null 2>&1 || die 'jq not found in PATH'
+
+	local choice
+	choice=$(pick_session) || die 'no session selected'
+
+	local agent target
+	IFS=$'\t' read -r _ agent target _ <<<"$choice"
+	open_session "${agent%% *}" "$target"
+}
+
+main "$@"

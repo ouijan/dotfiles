@@ -37,9 +37,18 @@ return {
 	},
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = { "j-hui/fidget.nvim", opts = {} },
+		dependencies = {
+			{
+				"j-hui/fidget.nvim",
+				-- winblend = 0 keeps the popup transparent; the default (100) blends
+				-- against a "none" background and renders solid black.
+				opts = { notification = { window = { winblend = 0 } } },
+			},
+		},
 		config = function()
-			-- Config
+			-- Servers provided by external toolchains (not mason) must be enabled explicitly.
+			-- rust-analyzer + rustfmt + clippy come from rustup.
+			vim.lsp.enable("rust_analyzer")
 		end,
 	},
 }

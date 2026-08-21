@@ -2,16 +2,12 @@
 
 ## Communication
 
-- When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
-- If you are unsure ask for clarity or research yourself.
-
 ## Rules
 
 - Never commit/push to main directly
 - Never run destructive commands without approval
 - Never commit secrets
 - Ask before expanding scope
-- Keep changes in working tree; don't commit at intervals
 
 ## Code Style
 

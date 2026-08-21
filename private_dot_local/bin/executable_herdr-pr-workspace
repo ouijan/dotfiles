@@ -1,0 +1,49 @@
+#!/bin/bash
+# Open a GitHub PR as a herdr worktree workspace.
+#
+# Usage: herdr-pr-workspace <owner/repo> <pr-number>
+#
+# worktrunk creates/reuses the worktree; `herdr worktree open` registers it so it
+# nests under the repo in the sidebar. The workspace layout is owned entirely by
+# herdr-plus (~/.config/herdr/plugins/config/cloudmanic.herdr-plus/worktrees/*.toml)
+# so PR review and manual worktrees look identical.
+#
+# Designed to be launched from gh-dash (see ~/.config/gh-dash/config.yml).
+# Re-invokes itself as `__open` from inside the worktree via `wt switch -x`.
+set -euo pipefail
+
+REPOS_ROOT="${HERDR_PR_REPOS_ROOT:-$HOME/code/github.com}"
+
+die() {
+	echo "herdr-pr-workspace: $1" >&2
+	exit 1
+}
+
+open_workspace() {
+	local worktree_path=$1 repo_path=$2
+
+	herdr worktree open --cwd "$repo_path" --path "$worktree_path" --focus >/dev/null
+}
+
+checkout_and_open() {
+	local repo=$1 pr_number=$2
+	local repo_path="$REPOS_ROOT/$repo"
+
+	[ -d "$repo_path" ] || die "repo not found at $repo_path"
+	local self
+	self=$(cd "$(dirname "$0")" && pwd)/$(basename "$0")
+	exec wt -C "$repo_path" switch "pr:$pr_number" --no-cd -y \
+		-x "$self" -- __open '{{ worktree_path }}' "$repo_path"
+}
+
+main() {
+	if [ "${1:-}" = "__open" ]; then
+		shift
+		open_workspace "$@"
+		return
+	fi
+	[ $# -eq 2 ] || die "usage: herdr-pr-workspace <owner/repo> <pr-number>"
+	checkout_and_open "$1" "$2"
+}
+
+main "$@"

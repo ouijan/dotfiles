@@ -1,0 +1,8 @@
+# Fuzzy-pick an existing pi or opencode session and resume it in the pane you
+# launched from (a fresh split beside it when that pane is busy). The session
+# adopts the launch directory, so it can be carried into a new worktree.
+# Script: ~/.local/bin/herdr-session (source: dotfiles/private_dot_local/bin).
+name = "Session: resume (pi | opencode)"
+command = """
+~/.local/bin/herdr-session
+"""

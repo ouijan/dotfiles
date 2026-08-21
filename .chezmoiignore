@@ -34,6 +34,7 @@ AGENTS.md
 {{- if ne .chezmoi.os "darwin" }}
 # macOS only
 .config/aerospace
+.config/borders
 .local/bin/ouijan-cli
 {{- end }}
 

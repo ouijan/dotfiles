@@ -4,12 +4,9 @@
 # `herdr worktree open` must start from the repo parent, so --cwd = the repo root
 # (the dir containing .bare), and --path = the chosen worktree checkout.
 # awk NR>1 drops the bare entry (first line of `git worktree list`).
-name = "PT: open worktree"
+name = "PT: Refresh Dependencies"
 command = """
-herdr worktree open \
-  --cwd ~/code/github.com/principle-theorem/principle-theorem \
-  --path "$(git -C ~/code/github.com/principle-theorem/principle-theorem/.bare \
-    worktree list | awk 'NR>1{print $1}' | fzf)"
+pnpm clean && pnpm install --frozen-lockfile
 """
 
 

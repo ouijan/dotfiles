@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+# nxtop — interactive viewer/killer for memory-hungry nx/pnpm/node build processes.
+# Runs as a herdr overlay pane (see herdr-plugin.toml) or standalone in any terminal.
+#
+# Keys: tab=select  enter=SIGTERM selected  ctrl-k=SIGKILL selected  ctrl-r=refresh
+set -euo pipefail
+
+SELF="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+require_fzf() {
+  command -v fzf >/dev/null && return
+  echo "nxtop: fzf not found on PATH" >&2
+  read -r -p "press enter to close"
+  exit 1
+}
+
+list_processes() {
+  {
+    printf 'PID\tGB\tPORTS\tWORKTREE\tWHAT\n'
+    awk '
+      function interesting(c) {
+        return c ~ /nx\/(bin|src)\// || c ~ /\/esbuild --service/ \
+          || c ~ /nx\.js/ || c ~ /pnpm (nx|nx-high-memory)/ || c ~ /ng (serve|build|test)/
+      }
+      function target_of(c) {
+        if (match(c, / run [A-Za-z0-9@_:.\/-]+/)) return substr(c, RSTART + 5, RLENGTH - 5)
+        return ""
+      }
+      function ancestor_target(id,   a, i, t) {
+        a = id
+        for (i = 0; i < 6 && (a in ppid); i++) {
+          t = target_of(cmd[a])
+          if (t != "") return t
+          a = ppid[a]
+        }
+        return ""
+      }
+      function role(id,   c, t) {
+        c = cmd[id]
+        if (c ~ /run-executor\.js/) {
+          t = ancestor_target(id)
+          return t != "" ? t : "executor"
+        }
+        if (c ~ /daemon\/server\/start\.js/) return "nx-daemon"
+        if (c ~ /plugin-worker/) return "plugin-worker"
+        if (c ~ /\/esbuild --service/) return "esbuild"
+        t = target_of(c)
+        return t != "" ? "run " t : "node"
+      }
+      function worktree(c,   wt) {
+        if (!match(c, /\/[^ \/]+\/node_modules\//)) return "?"
+        wt = substr(c, RSTART + 1)
+        sub(/\/node_modules\/.*/, "", wt)
+        return wt
+      }
+      # A wrapper (e.g. `pnpm nx run x`) has no path in argv; borrow the worktree
+      # from any kept descendant whose ancestor chain passes through it.
+      function wt_of(id,   w, k, a, i) {
+        w = worktree(cmd[id])
+        if (w != "?") return w
+        for (k in keep) {
+          a = k
+          for (i = 0; i < 6 && (a in ppid); i++) {
+            a = ppid[a]
+            if (a == id && worktree(cmd[k]) != "?") return worktree(cmd[k])
+          }
+        }
+        return "?"
+      }
+      FNR == NR {  # lsof LISTEN sockets -> ports[pid]
+        if ($2 !~ /^[0-9]+$/) next
+        p = $(NF - 1)
+        sub(/.*:/, "", p)
+        if (ports[$2] !~ "(^|,)" p "(,|$)")
+          ports[$2] = ports[$2] == "" ? p : ports[$2] "," p
+        next
+      }
+      {  # ps snapshot -> process tables
+        id = $1
+        ppid[id] = $2
+        rss[id] = $3
+        c = ""
+        for (i = 4; i <= NF; i++) c = c (i > 4 ? " " : "") $i
+        cmd[id] = c
+        if (c !~ /nxtop/ && interesting(c)) keep[id] = 1
+      }
+      END {
+        for (id in keep)
+          printf "%d\t%.2f\t%s\t%s\t%s\n", id, rss[id] / 1048576, \
+            (ports[id] == "" ? "-" : ports[id]), wt_of(id), role(id)
+      }
+    ' <(lsof -nP -iTCP -sTCP:LISTEN 2>/dev/null) <(ps axo pid=,ppid=,rss=,args=) \
+      | sort -t$'\t' -k2,2 -rn
+  } | column -t -s$'\t'
+}
+
+show_preview() {
+  local pid=$1
+  local info
+  info=$(ps -o pid=,ppid=,etime=,rss=,args= -p "$pid" 2>/dev/null) || { echo "process $pid gone"; return; }
+
+  echo "$info" | awk '{printf "pid %s  ppid %s  up %s  %.2f GB\n", $1, $2, $3, $4 / 1048576}'
+  local cwd
+  cwd=$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1)
+  [ -n "$cwd" ] && echo "cwd: $cwd"
+  local listens
+  listens=$(lsof -nP -a -p "$pid" -iTCP -sTCP:LISTEN 2>/dev/null | awk 'NR > 1 {print $(NF - 1)}' | sort -u | paste -sd, -)
+  [ -n "$listens" ] && echo "listening: $listens"
+  echo
+  echo "$info" | awk '{for (i = 5; i <= NF; i++) printf "%s ", $i; print ""}'
+
+  local children
+  children=$(pgrep -P "$pid" || true)
+  if [ -n "$children" ]; then
+    echo
+    echo "children:"
+    # shellcheck disable=SC2086
+    ps -o pid=,rss=,comm= -p $children 2>/dev/null \
+      | awk '{printf "  %6d  %5.2f GB  %s\n", $1, $2 / 1048576, $3}'
+  fi
+}
+
+kill_selected() {
+  local sig=$1
+  shift
+  [ $# -eq 0 ] && return
+  kill -s "$sig" "$@" 2>/dev/null || true
+  sleep 0.4
+}
+
+run_ui() {
+  require_fzf
+  local reload="reload:$SELF --list"
+  list_processes | fzf \
+    --multi --reverse --header-lines=1 --no-sort \
+    --prompt='nx> ' \
+    --header=$'tab=select  enter=kill(TERM)  ctrl-k=kill(-9)  ctrl-r=refresh  esc=quit' \
+    --preview="$SELF --preview {1}" \
+    --preview-window=down,35%,wrap \
+    --bind="enter:execute-silent($SELF --kill TERM {+1})+$reload" \
+    --bind="ctrl-k:execute-silent($SELF --kill KILL {+1})+$reload" \
+    --bind="ctrl-r:$reload" \
+    || true
+}
+
+case "${1:-}" in
+  --list) list_processes ;;
+  --preview) show_preview "$2" ;;
+  --kill) sig=$2; shift 2; kill_selected "$sig" "$@" ;;
+  *) run_ui ;;
+esac

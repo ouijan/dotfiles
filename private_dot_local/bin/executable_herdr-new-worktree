@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Create a NEW branch + worktree with worktrunk, then open it as a herdr workspace.
+#
+# Why not `herdr worktree create`? It makes the checkout but skips worktrunk's
+# project hooks (~/.config/worktrunk/config.toml): shared-file symlinks and
+# `pnpm install`. So worktrunk creates, herdr opens.
+#
+# Usage:
+#   herdr-new-worktree <branch> [base] [repo-root]
+#   herdr-new-worktree "fix/foo master"     # quick-action form passes one string
+#
+# Defaults: base = repo default branch, repo-root = principle-theorem bare repo.
+set -euo pipefail
+
+DEFAULT_REPO_ROOT="$HOME/code/github.com/principle-theorem/principle-theorem"
+
+# Quick-action forms hand over a single space-separated string; re-split it.
+read -r -a args <<<"${*:-}"
+branch="${args[0]:-}"
+base="${args[1]:-}"
+repo_root="${args[2]:-$DEFAULT_REPO_ROOT}"
+
+if [ -z "$branch" ]; then
+  read -r -p "New branch: " branch
+fi
+[ -n "$branch" ] || { echo "herdr-new-worktree: no branch given" >&2; exit 1; }
+
+create_args=(switch --create "$branch" --no-cd --yes)
+[ -n "$base" ] && create_args+=(--base "$base")
+
+wt -C "$repo_root" "${create_args[@]}"
+
+worktree_path=$(
+  git -C "$repo_root" worktree list --porcelain |
+    awk -v want="refs/heads/$branch" '
+      /^worktree /   { path = substr($0, 10) }
+      $0 == "branch " want { print path; exit }
+    '
+)
+
+if [ -z "$worktree_path" ]; then
+  echo "herdr-new-worktree: could not locate worktree for '$branch'" >&2
+  exit 1
+fi
+
+exec herdr worktree open --cwd "$repo_root" --path "$worktree_path"

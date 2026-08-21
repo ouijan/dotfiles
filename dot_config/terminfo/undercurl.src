@@ -1,0 +1,22 @@
+# Terminfo entries adding styled underlines to terminals whose stock entry
+# omits them. Neovim reads Smulx/Setulc from terminfo and silently falls
+# back to a flat underline when they are missing; it has no config override
+# (t_Cs/t_Ce are Vim-only).
+#
+# Compile with:
+#   tic -x ~/.config/terminfo/undercurl.src
+#
+#   Smulx  - underline style: 4:0 off, 4:1 straight, 4:3 curly, ...
+#   Setulc - underline colour (SGR 58), i.e. what makes nvim's `sp` work
+
+# herdr hardcodes TERM=xterm-256color for its panes but its emulator does
+# render CURLY_UNDERLINE + SGR 58. Select this via ~/.zshrc when HERDR_ENV=1.
+xterm-256color-uc|xterm-256color with styled underlines,
+	Smulx=\E[4\:%p1%dm,
+	Setulc=\E[58\:2\:\:%p1%{65536}%/%d\:%p1%{256}%/%{255}%&%d\:%p1%{255}%&%d%;m,
+	use=xterm-256color,
+
+tmux-256color-uc|tmux with 256 colours and styled underlines,
+	Smulx=\E[4\:%p1%dm,
+	Setulc=\E[58\:2\:\:%p1%{65536}%/%d\:%p1%{256}%/%{255}%&%d\:%p1%{255}%&%d%;m,
+	use=tmux-256color,

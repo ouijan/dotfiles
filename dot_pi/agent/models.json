@@ -1,0 +1,21 @@
+{
+  "providers": {
+    "claude-proxy": {
+      "baseUrl": "http://localhost:3456",
+      "api": "anthropic-messages",
+      "apiKey": "89461b8c637bc2bd8c872ab8746fe2c4645ea0a278a01a8326079e24acc8dea4",
+      "models": [
+        {
+          "id": "claude-sonnet-4-5-20250929",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 200000,
+          "maxTokens": 64000,
+          "compat": {
+            "supportsStrictTools": true
+          }
+        }
+      ]
+    }
+  }
+}

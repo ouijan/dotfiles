@@ -1,0 +1,6 @@
+# Open the herdr-nx overlay (fzf TUI listing nx/pnpm build processes by memory,
+# with kill bindings). Plugin source: dotfiles dot_config/herdr-nx.
+name = "NX: processes"
+command = """
+herdr plugin pane open --plugin toby.herdr-nx --entrypoint nx-picker --placement overlay --focus
+"""

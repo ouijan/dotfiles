@@ -12,9 +12,9 @@ after-login-command = []
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
+# borders (JankyBorders) draws the focus indicator. Configured in ~/.config/borders/bordersrc.
 after-startup-command = [
-    # 'exec-and-forget borders style=round width=6.0 inactive_color=0xaa181926 active_color=0xff8aadf4',
-    # 'exec-and-forget sketchybar',
+    'exec-and-forget borders',
 ]
 
 exec-on-workspace-change = [
@@ -177,7 +177,12 @@ alt-shift-semicolon = 'mode service'
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
-esc = ['reload-config', 'mode main']
+# Reload aerospace and hot-apply bordersrc in one keystroke.
+esc = [
+    'reload-config',
+    'exec-and-forget /bin/bash -lc "$HOME/.config/borders/bordersrc"',
+    'mode main',
+]
 r = ['flatten-workspace-tree', 'mode main'] # reset layout
 f = [
     'layout floating tiling',

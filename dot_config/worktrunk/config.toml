@@ -7,12 +7,8 @@
 # principle-theorem: bare repo (.bare) with worktrees as siblings in the repo root.
 # Replaces .tools/new-worktree.
 [projects."github.com/principle-theorem/principle-theorem"]
-# repo_path is the .bare dir for bare repos, so ../ is the repo root.
+# repo_path is the .bare dir for bare repos, so the default layout would be
+# `<root>/.bare.<branch>`; this keeps worktrees as plain siblings in the root.
 worktree-path = "{{ repo_path }}/../{{ branch | sanitize }}"
-
-# Blocking setup: link shared files, then install deps.
-[[projects."github.com/principle-theorem/principle-theorem".pre-start]]
-shared = "for item in ../.shared/.[!.]* ../.shared/*; do [ -e \"$item\" ] && ln -sf \"$item\" .; done; true"
-
-[[projects."github.com/principle-theorem/principle-theorem".pre-start]]
-deps = "pnpm clean && pnpm install --frozen-lockfile"
+# Link shared files (.npmrc etc), then install deps. Blocking.
+pre-start = 'for item in ../.shared/.[!.]* ../.shared/*; do [ -e "$item" ] && ln -sf "$item" .; done; pnpm clean && pnpm install --frozen-lockfile'

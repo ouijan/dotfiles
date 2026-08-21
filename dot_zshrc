@@ -94,6 +94,18 @@ alias lg="lazygit"
 # Kubernetes aliases
 alias k="kubectl"
 
+# herdr
+alias hp="herdr-project"
+
+# Tiling WM: apply dotfiles, reload aerospace, hot-apply borders.
+# borders updates its running instance in place, so no restart is needed.
+wm-reload() {
+	chezmoi apply ~/.config/aerospace ~/.config/borders || return 1
+	aerospace reload-config || return 1
+	~/.config/borders/bordersrc
+	echo "aerospace + borders reloaded"
+}
+
 # AI Aliases
 alias pi-principle='AGENTMEMORY_AGENT_ID=principle pi'
 alias pi-ouijan='AGENTMEMORY_AGENT_ID=ouijan pi'
@@ -173,3 +185,13 @@ autoload -U compinit && compinit
 
 # worktrunk shell integration (wt) - https://worktrunk.dev/config/#shell-integration
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
+# Undercurl inside herdr. herdr hardcodes TERM=xterm-256color, whose terminfo
+# has no Smulx/Setulc, so nvim downgrades undercurl to a flat underline even
+# though herdr's emulator renders curly underlines fine. Point at the extended
+# entry from ~/.config/terminfo/undercurl.src (compile once with `tic -x`).
+if [[ -n "$HERDR_ENV" && "$TERM" == "xterm-256color" ]]; then
+	if infocmp xterm-256color-uc >/dev/null 2>&1; then
+		export TERM=xterm-256color-uc
+	fi
+fi

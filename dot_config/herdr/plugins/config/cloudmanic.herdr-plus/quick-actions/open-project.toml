@@ -1,0 +1,7 @@
+# Fuzzy-pick a project dir under ~/code/github.com and open it as a herdr
+# workspace. Typing a name that doesn't exist creates it (mkdir + git init).
+# Script: ~/.local/bin/herdr-project (source: dotfiles/private_dot_local/bin).
+name = "Project: open or create"
+command = """
+~/.local/bin/herdr-project
+"""
