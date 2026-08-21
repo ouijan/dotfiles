@@ -25,5 +25,9 @@ window-padding-balance = true
 # MacOS Specific Settings
 macos-titlebar-style = "hidden"
 
+# Send Esc+key for left Option so alt+ keybinds work in TUIs (pi, nvim).
+# Right Option still composes special characters.
+macos-option-as-alt = left
+
 
 keybind = shift+enter=text:\x1b[13;2u
