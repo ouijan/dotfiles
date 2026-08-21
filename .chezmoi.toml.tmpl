@@ -1,0 +1,14 @@
+{{- $email := promptStringOnce . "email" "Git email address" -}}
+{{- $bwsAccessToken := promptStringOnce . "bws_access_token" "Bitwarden Secrets Manager machine access token" -}}
+
+[data]
+    email = {{ $email | quote }}
+    bws_access_token = {{ $bwsAccessToken | quote }}
+
+{{ if eq .chezmoi.os "darwin" -}}
+# Primary machine: chezmoi add/re-add auto-commits and pushes to main.
+# Remote machines are consumers only (chezmoi update).
+[git]
+    autoCommit = true
+    autoPush = true
+{{- end }}

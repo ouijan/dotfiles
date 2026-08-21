@@ -84,9 +84,13 @@ alias vim="nvim"
 alias vi="nvim"
 
 # eza aliases (ls replacement)
-alias ls="eza -ha --icons"
-alias ll="eza -lha --icons"
-alias lt="eza -TL 2 --icons"
+if command -v eza >/dev/null 2>&1; then
+	alias ls="eza -ha --icons"
+	alias ll="eza -lha --icons"
+	alias lt="eza -TL 2 --icons"
+else
+	alias ll="ls -lha"
+fi
 
 # Git aliases
 alias lg="lazygit"
@@ -138,14 +142,22 @@ fi
 # fi
 
 # Command-line fuzzy finder: https://github.com/junegunn/fzf
-source <(fzf --zsh)
+if command -v fzf >/dev/null 2>&1; then
+	source <(fzf --zsh)
+fi
 
 # Smarter cd command: https://github.com/ajeetdsouza/zoxide
-eval "$(zoxide init zsh)"
+if command -v zoxide >/dev/null 2>&1; then
+	eval "$(zoxide init zsh)"
+fi
 
 
 # pnpm
-export PNPM_HOME="/Users/tobyharris/Library/pnpm"
+if [[ "$OSTYPE" == darwin* ]]; then
+	export PNPM_HOME="$HOME/Library/pnpm"
+else
+	export PNPM_HOME="$HOME/.local/share/pnpm"
+fi
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -153,13 +165,13 @@ esac
 # pnpm end
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/tobyharris/.google-cloud-sdk/path.zsh.inc' ]; then . '/Users/tobyharris/.google-cloud-sdk/path.zsh.inc'; fi
+if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/tobyharris/.google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/tobyharris/.google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/completion.zsh.inc"; fi
 
 # bun completions
-[ -s "/Users/tobyharris/.bun/_bun" ] && source "/Users/tobyharris/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
@@ -173,7 +185,7 @@ export KUBECONFIG=~/.kube/config
 alias k="kubectl"
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/tobyharris/.docker/completions $fpath)
+fpath=($HOME/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 # End of Docker CLI completions

@@ -2,95 +2,53 @@
 
 Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 
-## Quick Start (New Machine)
+## New machine setup
 
-```bash
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply <github-username>
-```
+1. Install chezmoi and apply (prompts for git email + Bitwarden Secrets machine token):
+
+   ```bash
+   sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin init --apply git@github.com:ouijan/dotfiles.git
+   ```
+
+   The secrets template needs the `bws` CLI at apply time. If the first apply fails
+   on it, install packages (step 2) and re-run `chezmoi apply`.
+
+2. Install packages and shell (Oh My Zsh, p10k, plugins):
+
+   ```bash
+   ~/.local/bin/ouijan-install
+   ```
+
+   Supports macOS (brew), Arch (pacman), and Debian/Ubuntu (apt).
+
+3. Switch shell and finish:
+
+   ```bash
+   chsh -s "$(command -v zsh)"
+   ```
+
+   Neovim plugins bootstrap on first launch.
 
 ## Updating
 
-```bash
-chezmoi update
+- Any machine: `chezmoi update` (pull + apply)
+- Primary (macOS) only: `chezmoi add`/`re-add` auto-commits and pushes to main
+  (configured in `.chezmoi.toml.tmpl`). Remote machines are consumers.
+
+## Layout
+
+```
+dot_config/           ~/.config/  (nvim, tmux, herdr, opencode, lazygit, ...)
+dot_pi/agent/         pi coding agent (settings, extensions, themes)
+dot_zshrc             zsh + Oh My Zsh + p10k
+private_dot_local/bin CLI scripts (~/.local/bin)
+.chezmoitemplates/    per-OS package install scripts
+.chezmoiignore        OS-conditional exclusions (macOS-only tools skipped on Linux)
+.chezmoi.toml.tmpl    machine config: prompts for email + bws token
 ```
 
-## Structure
+## Secrets
 
-```
-dotfiles/
-├── dot_config/              # ~/.config/
-│   ├── aerospace/           # macOS window manager (macOS only)
-│   ├── alacritty/           # Terminal emulator
-│   ├── lazygit/             # Git TUI
-│   ├── nvim/                # Neovim configuration
-│   ├── opencode/            # OpenCode AI assistant
-│   └── tmux/                # Tmux configuration
-├── private_dot_local/
-│   └── bin/                 # CLI scripts (~/.local/bin/)
-├── dot_zshrc                # Zsh configuration
-├── dot_p10k.zsh             # Powerlevel10k theme
-├── dot_gitconfig.tmpl       # Git config (templated)
-├── .chezmoiignore           # OS-conditional file exclusions
-└── .chezmoiexternal.toml    # External dependencies
-```
-
-## CLI Scripts
-
-Scripts installed to `~/.local/bin/` and available in PATH on all systems.
-
-| Command          | Description                                                  | Platforms  |
-| ---------------- | ------------------------------------------------------------ | ---------- |
-| `ouijan-cli`     | App launcher helper for aerospace/shortcuts                  | macOS only |
-| `ouijan-install` | Bootstrap script for new machines (packages, shell, configs) | All        |
-| `ouijan-pr`      | Create GitHub PR with Gemini AI-generated description        | All        |
-| `ouijan-tmux`    | Launch standardized tmux workspace (nvim, opencode, lazygit) | All        |
-
-### Usage Examples
-
-```bash
-# Bootstrap a new machine
-ouijan-install
-
-# Start a tmux dev session in current directory
-ouijan-tmux
-
-# Start a named tmux session
-ouijan-tmux my-project
-
-# Create a PR with AI-generated description
-ouijan-pr
-
-# Launch apps via aerospace (macOS)
-ouijan-cli browser https://github.com
-ouijan-cli terminal
-ouijan-cli editor
-```
-
-## Configurations
-
-### Shell (Zsh + Oh My Zsh)
-
-- **Theme**: Powerlevel10k
-- **Plugins**: zsh-syntax-highlighting, zsh-autosuggestions, fzf-tab, nvm
-- **Tools**: fzf (fuzzy finder), zoxide (smart cd), eza (ls replacement)
-
-### Neovim
-
-LazyVim-based configuration with LSP support.
-
-### Tmux
-
-Custom keybindings with Catppuccin theme.
-
-### Aerospace (macOS)
-
-Tiling window manager configuration.
-
-## Platform Support
-
-| Platform            | Status       |
-| ------------------- | ------------ |
-| macOS (Homebrew)    | Full support |
-| Arch Linux (pacman) | Full support |
-
-OS-specific files are automatically included/excluded via `.chezmoiignore`.
+`~/.secrets.zsh` is generated at apply time from Bitwarden Secrets Manager via the
+`bws` CLI and the machine access token stored in `~/.config/chezmoi/chezmoi.toml`.
+No secrets are committed to this repo.

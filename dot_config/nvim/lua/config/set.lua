@@ -35,8 +35,14 @@ vim.g.editorconfig = true
 -- loaders
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
-vim.g.python3_host_prog = "~/.pyenv/versions/nvim3/bin/python"
-vim.g.node_host_prog = "/Users/tobyharris/Library/pnpm/global/5/node_modules/neovim/bin/cli.js"
+local python_host = vim.fn.expand("~/.pyenv/versions/nvim3/bin/python")
+if vim.fn.executable(python_host) == 1 then
+	vim.g.python3_host_prog = python_host
+end
+local node_host = vim.fn.expand("~/Library/pnpm/global/5/node_modules/neovim/bin/cli.js")
+if vim.fn.filereadable(node_host) == 1 then
+	vim.g.node_host_prog = node_host
+end
 
 vim.opt.nu = true
 

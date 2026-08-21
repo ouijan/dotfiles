@@ -1,25 +1,25 @@
-# sudo cachyos-rate-mirrors
-sudo pacman -Syu \
+sudo apt-get update
+sudo apt-get install -y \
     zsh \
     git \
     curl \
     wget \
-    chezmoi \
     neovim \
     tmux \
     lazygit \
     zoxide \
     tealdeer \
-    opencode \
     eza \
     fzf \
-    docker \
-    docker-compose \
     gpg \
     pass \
-    nfs-utils
+    nodejs \
+    npm
 
-systemctl --user enable --now ssh-agent.service
+# chezmoi is not in Debian's repos; install to ~/.local/bin
+if ! command -v chezmoi >/dev/null 2>&1; then
+    sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+fi
 
 # bws (Bitwarden Secrets Manager CLI) - required by chezmoi secrets templates
 if ! command -v bws >/dev/null 2>&1; then

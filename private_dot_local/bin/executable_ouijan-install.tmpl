@@ -1,7 +1,14 @@
 {{- if eq .chezmoi.os "darwin" -}}
 {{-   template "install_darwin.tmpl" . -}}
 {{- else if eq .chezmoi.os "linux" -}}
-{{-   template "install_arch.tmpl" . -}}
+{{-   if eq .chezmoi.osRelease.id "arch" -}}
+{{-     template "install_arch.tmpl" . -}}
+{{-   else if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
+{{-     template "install_debian.tmpl" . -}}
+{{-   else -}}
+echo "Unsupported Linux distro: {{ .chezmoi.osRelease.id }}" >&2
+exit 1
+{{-   end -}}
 {{- end -}}
 
 {{-   template "install_universal.tmpl" . -}}
