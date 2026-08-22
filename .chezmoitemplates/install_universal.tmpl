@@ -6,7 +6,9 @@ if [ -d "$HOME/.oh-my-zsh" ]; then
     echo "Oh My Zsh already installed."
 else
     echo "Installing Oh My Zsh"
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    # KEEP_ZSHRC: don't let the installer replace the chezmoi-managed ~/.zshrc
+    KEEP_ZSHRC=yes RUNZSH=no CHSH=no \
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
     # Install zsh plugins
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
