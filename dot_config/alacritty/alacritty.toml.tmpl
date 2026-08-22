@@ -10,10 +10,10 @@ blur = true
 padding = { x = 10, y = 10 }
 
 [font]
-normal.family = "{{ .font | default "MesloLGS NF" }}"
-bold.family = "{{ .font | default "MesloLGS NF" }}"
-italic.family = "{{ .font | default "MesloLGS NF" }}"
-bold_italic.family = "{{ .font | default "MesloLGS NF" }}"
+normal.family = "{{ get . "font" | default "MesloLGS NF" }}"
+bold.family = "{{ get . "font" | default "MesloLGS NF" }}"
+italic.family = "{{ get . "font" | default "MesloLGS NF" }}"
+bold_italic.family = "{{ get . "font" | default "MesloLGS NF" }}"
 
 size = 15.0
 
