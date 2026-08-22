@@ -34,11 +34,15 @@ plugins=(
     zsh-syntax-highlighting
 )
 
+# Completion fpath additions - must be set before oh-my-zsh runs compinit.
 # zsh-completions - https://github.com/zsh-users/zsh-completions
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
-autoload -U compinit && compinit
+# Docker CLI completions
+fpath=($HOME/.docker/completions $fpath)
+# Personal completions (~/.zsh/completions)
+fpath=(~/.zsh/completions $fpath)
 
-# Load Oh My Zsh + Powerlevel10k
+# Load Oh My Zsh + Powerlevel10k (oh-my-zsh runs compinit once for everything)
 source $ZSH/oh-my-zsh.sh
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -183,17 +187,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # K8s config
 export KUBECONFIG=~/.kube/config
 alias k="kubectl"
-
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=($HOME/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
-
-
-# zsh completions
-fpath=(~/.zsh/completions $fpath)
-autoload -U compinit && compinit
 
 # worktrunk shell integration (wt) - https://worktrunk.dev/config/#shell-integration
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
