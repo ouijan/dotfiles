@@ -1,0 +1,12 @@
+#!/bin/sh
+# Compile custom terminfo entries (undercurl support) into ~/.terminfo.
+# Re-runs when the source file changes.
+# undercurl.src hash: {{ include "dot_config/terminfo/undercurl.src" | sha256sum }}
+set -eu
+
+if ! command -v tic >/dev/null 2>&1; then
+    echo "tic not found; skipping terminfo compile" >&2
+    exit 0
+fi
+
+tic -x "${HOME}/.config/terminfo/undercurl.src"
