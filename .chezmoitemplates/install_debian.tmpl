@@ -4,7 +4,6 @@ sudo apt-get install -y \
     git \
     curl \
     wget \
-    neovim \
     tmux \
     lazygit \
     zoxide \
@@ -15,6 +14,23 @@ sudo apt-get install -y \
     pass \
     nodejs \
     npm
+
+# Debian ships neovim 0.10.x; the config needs 0.11+ (winborder, lsp/ dir).
+# Install the upstream release into ~/.local.
+NVIM_VERSION="v0.11.5"
+if ! nvim --version 2>/dev/null | head -1 | grep -q "$NVIM_VERSION"; then
+    NVIM_ARCH="$(uname -m)"
+    NVIM_TARBALL="nvim-linux-${NVIM_ARCH}.tar.gz"
+    NVIM_TMP="$(mktemp -d)"
+    curl -fsSL -o "$NVIM_TMP/$NVIM_TARBALL" \
+        "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_TARBALL}"
+    tar -xzf "$NVIM_TMP/$NVIM_TARBALL" -C "$NVIM_TMP"
+    rm -rf "$HOME/.local/share/nvim-release"
+    mkdir -p "$HOME/.local/share" "$HOME/.local/bin"
+    mv "$NVIM_TMP/nvim-linux-${NVIM_ARCH}" "$HOME/.local/share/nvim-release"
+    ln -sf "$HOME/.local/share/nvim-release/bin/nvim" "$HOME/.local/bin/nvim"
+    rm -rf "$NVIM_TMP"
+fi
 
 # chezmoi is not in Debian's repos; install to ~/.local/bin
 if ! command -v chezmoi >/dev/null 2>&1; then
