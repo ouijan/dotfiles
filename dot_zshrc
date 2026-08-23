@@ -132,6 +132,12 @@ export AGENTMEMORY_REQUIRE_HTTPS=1
 # AGENTMEMORY_SECRET lives in chezmoi-managed ~/.secrets.zsh (from Bitwarden)
 [ -f ~/.secrets.zsh ] && source ~/.secrets.zsh
 
+# hindsight + mnemosyne (memory trial — homelab k8s, see ouijan/homelab)
+export HINDSIGHT_API_URL="https://hindsight-api.tharris.cc"   # opencode plugin
+export HINDSIGHT_BASE_URL="https://hindsight-api.tharris.cc"  # pi-hindsight extension
+export HINDSIGHT_PROJECT_BANK_ID="coding"                     # shared bank across pi + opencode
+# MNEMOSYNE_MCP_TOKEN lives in ~/.secrets.zsh (from Bitwarden)
+
 # Local bin scripts (cross-platform)
 export PATH="$HOME/.local/bin:$PATH"
 

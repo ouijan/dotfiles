@@ -5,8 +5,14 @@
     "opencode-antigravity-auth@latest",
     "@ex-machina/opencode-anthropic-auth@1.8.0",
     "oh-my-openagent@latest",
-    "./plugins/agentmemory-capture.ts",
-    "./plugins/herdr-agent-state.js"
+    "./plugins/herdr-agent-state.js",
+    [
+      "@vectorize-io/opencode-hindsight",
+      {
+        "hindsightApiUrl": "https://hindsight-api.tharris.cc",
+        "bankId": "coding"
+      }
+    ]
   ],
   "model": "github-copilot/claude-opus-4.8",
   "mcp": {
@@ -79,7 +85,15 @@
     "agentmemory": {
       "type": "local",
       "command": ["npx", "-y", "@agentmemory/mcp"],
-      "enabled": true
+      "enabled": false
+    },
+    "mnemosyne": {
+      "enabled": false,
+      "type": "remote",
+      "url": "https://mnemosyne.tharris.cc/sse",
+      "headers": {
+        "Authorization": "Bearer {{ (bitwardenSecrets "3b24b913-5bb6-49a4-aa50-b4af004da359" .bws_access_token).value }}"
+      }
     }
   }
 }

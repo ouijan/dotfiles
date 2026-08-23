@@ -1,5 +1,12 @@
 {
   "mcpServers": {
+    "mnemosyne": {
+      "disabled": true,
+      "url": "https://mnemosyne.tharris.cc/sse",
+      "auth": "bearer",
+      "bearerToken": "!sh -c '. ~/.secrets.zsh; printf %s \"$MNEMOSYNE_MCP_TOKEN\"'",
+      "lifecycle": "lazy"
+    },
     "clickup": {
       "url": "https://mcp.clickup.com/mcp",
       "auth": "oauth",

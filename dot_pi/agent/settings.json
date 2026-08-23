@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "0.84.2",
   "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-5",
+  "defaultModel": "claude-fable-5",
   "defaultThinkingLevel": "medium",
   "theme": "catppuccin",
   "skills": [
@@ -9,7 +9,8 @@
   ],
   "packages": [
     "npm:pi-claude-auth",
-    "npm:pi-mcp-adapter"
+    "npm:pi-mcp-adapter",
+    "npm:@luxusai/pi-hindsight"
   ],
   "warnings": {
     "anthropicExtraUsage": false
