@@ -114,11 +114,31 @@ wm-reload() {
 	echo "aerospace + borders reloaded"
 }
 
-# AI Aliases
-alias pi-principle='AGENTMEMORY_AGENT_ID=principle pi'
-alias pi-ouijan='AGENTMEMORY_AGENT_ID=ouijan pi'
-alias oc-principle='AGENTMEMORY_AGENT_ID=principle opencode'
-alias oc-ouijan='AGENTMEMORY_AGENT_ID=ouijan opencode'
+# AI Aliases — identity routing for memory backends.
+# hindsight:   HINDSIGHT_BANK_ID picks the bank (env wins over plugin options
+#              AND repo-level opencode.json — config layers replace, not merge).
+#              work → principle (hard wall), personal → coding (shared with pi).
+#              Author tag comes from HINDSIGHT_AUTHOR (see hindsight env below).
+alias oc-principle='HINDSIGHT_BANK_ID=principle opencode'
+alias oc-ouijan='HINDSIGHT_BANK_ID=coding opencode'
+
+# Auto-route memory identity by directory — cd into a work repo and plain
+# `pi` / `opencode` hit the work identity + bank; leave and it reverts to
+# personal defaults. Keeps work config out of shared repos entirely.
+# The aliases above remain as explicit overrides (their env wins at launch).
+_memory_identity_by_dir() {
+  case "$PWD" in
+    "$HOME/code/github.com/principle-theorem"*)
+      export HINDSIGHT_BANK_ID=principle
+      ;;
+    *)
+      unset HINDSIGHT_BANK_ID   # opencode falls back to opencode.json default (coding)
+      ;;
+  esac
+}
+autoload -U add-zsh-hook
+add-zsh-hook chpwd _memory_identity_by_dir
+_memory_identity_by_dir
 
 
 # -----------------------------------------------
@@ -126,17 +146,20 @@ alias oc-ouijan='AGENTMEMORY_AGENT_ID=ouijan opencode'
 # -----------------------------------------------
 
 
-# agentmemory (memory server for coding agents / pi extension)
-export AGENTMEMORY_URL="https://agentmemory.tharris.cc:3111"
-export AGENTMEMORY_REQUIRE_HTTPS=1
-# AGENTMEMORY_SECRET lives in chezmoi-managed ~/.secrets.zsh (from Bitwarden)
+# Secrets pulled from Bitwarden by chezmoi into ~/.secrets.zsh
 [ -f ~/.secrets.zsh ] && source ~/.secrets.zsh
 
-# hindsight + mnemosyne (memory trial — homelab k8s, see ouijan/homelab)
+# hindsight (memory — homelab k8s, see ouijan/homelab)
 export HINDSIGHT_API_URL="https://hindsight-api.tharris.cc"   # opencode plugin
 export HINDSIGHT_BASE_URL="https://hindsight-api.tharris.cc"  # pi-hindsight extension
 export HINDSIGHT_PROJECT_BANK_ID="coding"                     # shared bank across pi + opencode
-# MNEMOSYNE_MCP_TOKEN lives in ~/.secrets.zsh (from Bitwarden)
+# Author attribution on every opencode retain — collaborators set their own
+# HINDSIGHT_AUTHOR. NB: this env var REPLACES any repo-level retainTags
+# (layers don't merge), so it must carry the full tag list.
+# pi-hindsight has no custom-tag config yet (upstream gap); pi memories are
+# attributable via its hardcoded harness:pi tag only.
+export HINDSIGHT_AUTHOR="tharris"
+export HINDSIGHT_RETAIN_TAGS="source:opencode,author:${HINDSIGHT_AUTHOR}"
 
 # Local bin scripts (cross-platform)
 export PATH="$HOME/.local/bin:$PATH"
@@ -196,13 +219,3 @@ alias k="kubectl"
 
 # worktrunk shell integration (wt) - https://worktrunk.dev/config/#shell-integration
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
-
-# Undercurl inside herdr. herdr hardcodes TERM=xterm-256color, whose terminfo
-# has no Smulx/Setulc, so nvim downgrades undercurl to a flat underline even
-# though herdr's emulator renders curly underlines fine. Point at the extended
-# entry from ~/.config/terminfo/undercurl.src (compile once with `tic -x`).
-if [[ -n "$HERDR_ENV" && "$TERM" == "xterm-256color" ]]; then
-	if infocmp xterm-256color-uc >/dev/null 2>&1; then
-		export TERM=xterm-256color-uc
-	fi
-fi
