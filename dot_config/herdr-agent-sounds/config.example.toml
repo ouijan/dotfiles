@@ -1,0 +1,60 @@
+# herdr-agent-sounds configuration.
+#
+# Copy to $HERDR_PLUGIN_CONFIG_DIR/config.toml, which is:
+#   ~/.config/herdr/plugins/config/<plugin-id>/config.toml
+#
+# Disable Herdr's built-in sounds too, or every event plays twice:
+#   [ui.sound]
+#   enabled = false
+#
+# No sounds ship with this plugin. Use your own files, anywhere on disk.
+
+
+# --- Simple form: one set of pools --------------------------------------
+#
+# Each key is a Herdr agent status; each value is a list of sound files.
+# One is picked at random per event. Paths may be absolute or use ~.
+# Missing files are skipped, so a partial pool still works.
+#
+# Statuses Herdr can report: working, done, blocked, idle, unknown.
+# In practice pi and OpenCode report only `working` and `done`; `blocked`
+# comes from agents with dedicated blocker detection such as Claude Code
+# and Kimi. A pool for a status that never fires is simply never used.
+
+[sounds]
+done = [
+  "~/sounds/done-1.mp3",
+  "~/sounds/done-2.mp3",
+]
+blocked = ["~/sounds/needs-input.mp3"]
+
+# Usually best left empty: `working` fires every time you send a prompt.
+working = []
+
+
+# --- Pack form: several named sets, one active ---------------------------
+#
+# Delete the [sounds] table above to use packs; a top-level [sounds] takes
+# precedence so existing configs keep working. Switch with:
+#   herdr-soundpack use <name>
+#
+# active_pack = "orc"
+#
+# [packs.orc.sounds]
+# done = ["~/sounds/orc/work-complete.mp3"]
+# blocked = [
+#   "~/sounds/orc/what1.mp3",
+#   "~/sounds/orc/what2.mp3",
+# ]
+#
+# [packs.human.sounds]
+# done = ["~/sounds/human/jobs-done.mp3"]
+# blocked = ["~/sounds/human/yes-milord.mp3"]
+
+
+# --- Per-agent overrides, mirroring Herdr's [ui.sound.agents] ------------
+# "off" mutes that agent entirely. Anything else is treated as enabled.
+# Agent names match Herdr's detected labels: pi, opencode, claude, codex, droid.
+
+[agents]
+droid = "off"

@@ -1,0 +1,26 @@
+# herdr-agent-sounds — play a random sound from a pool when an agent changes state.
+#
+# Herdr's built-in [ui.sound] allows exactly one file per event. This plugin
+# hooks pane.agent_status_changed and picks randomly from a user-defined pool
+# instead, so a busy day does not mean the same clip forty times.
+#
+# Chezmoi-managed (dotfiles: dot_config/herdr-agent-sounds). Registered via:
+#   herdr plugin link ~/.config/herdr-agent-sounds
+#
+# Sounds are NOT bundled: users declare their own absolute paths in
+# $HERDR_PLUGIN_CONFIG_DIR/config.toml. See config.example.toml.
+#
+# Disable Herdr's own sounds when enabling this, or every event plays twice:
+#   [ui.sound]
+#   enabled = false
+
+id = "toby.herdr-agent-sounds"
+name = "Agent Sounds"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Play a random sound from a pool when an agent finishes, starts, or needs input."
+platforms = ["macos", "linux"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["./play-sound"]

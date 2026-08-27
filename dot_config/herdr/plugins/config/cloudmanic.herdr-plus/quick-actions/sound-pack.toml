@@ -1,0 +1,7 @@
+# Fuzzy-pick a Herdr notification sound pack and apply it immediately.
+# Script: ~/.local/bin/herdr-soundpack (source: dotfiles/private_dot_local/bin).
+# Packs live in ~/.config/herdr/sounds/<pack>/{general,request,done}.mp3.
+name = "Sound: switch pack"
+command = """
+~/.local/bin/herdr-soundpack pick
+"""

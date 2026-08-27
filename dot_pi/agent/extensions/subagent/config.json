@@ -1,0 +1,9 @@
+{
+  "fleetViewPlacement": "aboveEditor",
+  "fleetKeybindings": {
+    "pageUp": ["u"],
+    "pageDown": ["d"],
+    "selectFirst": ["g"],
+    "selectLast": ["G"]
+  }
+}

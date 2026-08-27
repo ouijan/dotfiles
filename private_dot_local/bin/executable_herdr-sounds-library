@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+#
+# Mirror every available quote for a set of Warcraft III units into a browsable
+# local library, so manifest.tsv entries can be chosen by ear.
+#
+# The wiki's quote lists are sometimes incomplete (Crypt Fiend has four
+# CryptFiendYes*.wav files but only three listed "Yes" lines), so file numbers
+# cannot be mapped to quotes by position. Listening is the only reliable route.
+#
+# The library is committed to the dotfiles repo, so the plugin config can
+# reference any quote by path without a separate fetch step.
+#
+# Usage:
+#   herdr-sounds-library                    # refresh units already present
+#   herdr-sounds-library Footman Grunt Lich # add named units
+#
+set -euo pipefail
+
+readonly WIKI_API="https://warcraft.wiki.gg/api.php"
+readonly WIKI_IMAGES="https://warcraft.wiki.gg/images"
+readonly BROWSER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+readonly REQUEST_DELAY_SECONDS=2
+# Written into the chezmoi SOURCE tree, not ~/.config: writing to the applied
+# copy would be overwritten by the next apply, and using `chezmoi add` would
+# trigger autoCommit and sweep in every unrelated dirty file.
+LIBRARY_DIR="$(chezmoi source-path)/dot_config/herdr/sounds/library"
+readonly LIBRARY_DIR
+
+# Units already in the library. `Local` holds files with no wiki upstream.
+units_in_library() {
+  find "$LIBRARY_DIR" -mindepth 1 -maxdepth 1 -type d -not -name Local \
+    -exec basename {} \; | sort
+}
+
+list_unit_files() {
+  local unit="$1"
+  curl -s -A "$BROWSER_AGENT" \
+    "$WIKI_API?action=query&list=allimages&aiprefix=$unit&ailimit=500&format=json" \
+    | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+names = [i['name'] for i in data['query']['allimages'] if i['name'].endswith('.wav')]
+print('\n'.join(sorted(names)))
+"
+}
+
+fetch_as_mp3() {
+  local wiki_file="$1" destination="$2"
+  curl -sL -A "$BROWSER_AGENT" "$WIKI_IMAGES/$wiki_file" -o "$destination.wav"
+  ffmpeg -loglevel error -y -i "$destination.wav" -codec:a libmp3lame -q:a 4 "$destination"
+  rm -f "$destination.wav"
+}
+
+download_unit() {
+  local unit="$1"
+  local unit_dir="$LIBRARY_DIR/$unit"
+  mkdir -p "$unit_dir"
+
+  local wiki_files
+  wiki_files="$(list_unit_files "$unit")"
+  if [[ -z "$wiki_files" ]]; then
+    echo "  $unit: no audio on the wiki"
+    return 0
+  fi
+
+  local count=0
+  while read -r wiki_file; do
+    local destination="$unit_dir/${wiki_file%.wav}.mp3"
+    [[ -f "$destination" ]] && continue
+    fetch_as_mp3 "$wiki_file" "$destination"
+    count=$((count + 1))
+    sleep "$REQUEST_DELAY_SECONDS"
+  done <<< "$wiki_files"
+  echo "  $unit: $count new ($(find "$unit_dir" -name '*.mp3' | wc -l | tr -d ' ') total)"
+}
+
+main() {
+  mkdir -p "$LIBRARY_DIR"
+  local units
+  if [[ $# -gt 0 ]]; then
+    units="$(printf '%s\n' "$@")"
+  else
+    units="$(units_in_library)"
+  fi
+
+  echo "Mirroring to $LIBRARY_DIR"
+  echo
+  while read -r unit; do
+    [[ -z "$unit" ]] && continue
+    download_unit "$unit"
+  done <<< "$units"
+
+  echo
+  echo "browse: open $LIBRARY_DIR"
+  echo "then reference files from the plugin config and: chezmoi apply"
+}
+
+main "$@"

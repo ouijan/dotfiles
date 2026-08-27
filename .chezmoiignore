@@ -26,6 +26,10 @@ AGENTS.md
 !.config/herdr/plugins/config
 .config/herdr/plugins/config/*
 !.config/herdr/plugins/config/cloudmanic.herdr-plus
+# Sound pools for the local herdr-agent-sounds plugin.
+!.config/herdr/plugins/config/toby.herdr-agent-sounds
+.config/herdr/plugins/config/toby.herdr-agent-sounds/*
+!.config/herdr/plugins/config/toby.herdr-agent-sounds/config.toml
 .config/herdr/plugins/config/cloudmanic.herdr-plus/*
 !.config/herdr/plugins/config/cloudmanic.herdr-plus/projects
 !.config/herdr/plugins/config/cloudmanic.herdr-plus/worktrees

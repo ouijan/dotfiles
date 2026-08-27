@@ -1,2 +1,5 @@
 [hosts.docker01]
 target = "docker01"
+
+[hosts.tristram]
+target = "tristram"

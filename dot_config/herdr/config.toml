@@ -18,6 +18,9 @@ focus_pane_down = ["prefix+j", "ctrl+alt+j"]
 focus_pane_up = ["prefix+k", "ctrl+alt+k"]
 focus_pane_right = ["prefix+l", "ctrl+alt+l"]
 
+
+
+
 # vim-herdr-navigation: vim-aware ctrl+hjkl (vim-tmux-navigator for herdr)
 # install: herdr plugin install --yes paulbkim-dev/vim-herdr-navigation
 [[keys.command]]
@@ -70,13 +73,50 @@ blue = "#89b4fa"
 [ui]
 agent_panel_sort = "priority"
 show_agent_labels_on_pane_borders = true
+sidebar_collapsed_mode = "hidden"
+tab_bar_right_separator = " · "
+tab_bar_right = [
+  { type = "zoom" },
+  # { type = "hostname" },
+  # { type = "datetime", format = "%H:%M" },
+  { type = "text", text = "Terminal by toby" },
+  # { type = "command", command = "~/.config/herdr/status.sh", interval_seconds = 5, timeout_seconds = 2 },
+]
+
+[ui.sidebar.spaces]
+row_gap = 1
+rows = [
+  ["state_icon", "workspace"],
+  ["branch", "git_status"],
+]
+
+# Surface pi-subagents activity in the agent sidebar.
+# pi-subagents publishes a `title-suffix` into pane metadata whenever async
+# subagents are running (agent name for one, a count for several, `⚠` when a
+# child needs attention). Without a row referencing `state_text` that label is
+# published but never rendered.
+[ui.sidebar.agents]
+row_gap = 1
+rows = [
+  ["state_icon", "workspace", "tab"],
+  # ["agent", "tab"],
+  ["state_text"],
+]
 
 [ui.toast]
 delivery = "terminal"
 
+# Agent-event sounds are owned by the toby.herdr-agent-sounds plugin, which
+# picks randomly from pools instead of Herdr's one-file-per-event limit.
+# See plugins/config/toby.herdr-agent-sounds/config.toml, switch packs with
+# `herdr-soundpack use <pack>`.
+#
+# enabled = false stops agent events playing twice. The paths below still
+# serve `herdr notification show --sound`, which the plugin does not
+# intercept. Relative to this file, so no machine-specific absolute paths.
 [ui.sound]
-enabled = true
-path = "/Users/tobyharris/Documents/sounds/undertakers-bell.mp3" # for general notifications
-done_path = "/Users/tobyharris/Documents/sounds/jobs-done.mp3" # for agent completions
-request_path = "/Users/tobyharris/Documents/sounds/work-work.mp3" # for agent requests
+enabled = false
+path = "sounds/library/Local/UndertakersBell.mp3"
+done_path = "sounds/library/Local/JobsDone.mp3"
+request_path = "sounds/library/Local/WorkWork.mp3"
 

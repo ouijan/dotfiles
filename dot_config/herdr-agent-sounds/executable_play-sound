@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+"""Play a random sound from a pool in response to a Herdr agent status change.
+
+Invoked by Herdr as a `pane.agent_status_changed` event hook. The event arrives
+in HERDR_PLUGIN_EVENT_JSON and looks like:
+
+    {"event": "pane_agent_status_changed",
+     "data": {"pane_id": "w1T:pG", "workspace_id": "w1T",
+              "agent_status": "done", "agent": "opencode"}}
+
+`agent` is absent when a pane's agent has been released, so it is never assumed.
+
+Configuration lives in $HERDR_PLUGIN_CONFIG_DIR/config.toml and maps status
+names to explicit lists of sound files. Statuses are not hardcoded here: any
+status Herdr reports can be given a pool, so `blocked` starts working as soon
+as an agent integration reports it.
+
+Pools can be declared directly under [sounds], or grouped into named packs with
+one selected by `active_pack`:
+
+    active_pack = "wc3/peon"
+
+    [packs."wc3/peon".sounds]
+    done = ["~/sounds/PeonJobDone.mp3"]
+
+A top-level [sounds] table still works and takes precedence, so a config
+without packs needs no changes.
+"""
+from __future__ import annotations
+
+import json
+import os
+import random
+import shutil
+import subprocess
+import sys
+import tomllib
+from pathlib import Path
+
+MUTED = "off"
+LOG_LINE_LIMIT = 200
+# Ordered by preference; the first one present on the system is used.
+AUDIO_PLAYERS = ("afplay", "paplay", "pw-play", "ffplay", "mpg123", "mpv")
+
+
+def config_path() -> Path:
+    config_dir = os.environ.get("HERDR_PLUGIN_CONFIG_DIR")
+    if not config_dir:
+        raise SystemExit("HERDR_PLUGIN_CONFIG_DIR not set; run this via Herdr")
+    return Path(config_dir) / "config.toml"
+
+
+def load_config() -> dict:
+    path = config_path()
+    if not path.exists():
+        return {}
+    with path.open("rb") as handle:
+        return tomllib.load(handle)
+
+
+def event_data() -> dict:
+    raw_event = os.environ.get("HERDR_PLUGIN_EVENT_JSON")
+    if not raw_event:
+        raise SystemExit("no HERDR_PLUGIN_EVENT_JSON in environment")
+    return json.loads(raw_event).get("data", {})
+
+
+def log(message: str) -> None:
+    """Append to a capped debug log, so a misfiring hook can be diagnosed."""
+    state_dir = os.environ.get("HERDR_PLUGIN_STATE_DIR")
+    if not state_dir:
+        return
+    log_file = Path(state_dir) / "play-sound.log"
+    previous = log_file.read_text().splitlines() if log_file.exists() else []
+    kept = previous[-(LOG_LINE_LIMIT - 1):]
+    log_file.write_text("\n".join([*kept, message]) + "\n")
+
+
+def agent_is_muted(config: dict, agent: str) -> bool:
+    """Mirror Herdr's [ui.sound.agents] per-agent on/off overrides."""
+    if not agent:
+        return False
+    agents = config.get("agents", {})
+    return str(agents.get(agent, "default")).lower() == MUTED
+
+
+def active_sounds(config: dict) -> dict:
+    """Resolve the sound table, honouring a selected pack.
+
+    A top-level [sounds] wins, so configs predating packs keep working.
+    """
+    if config.get("sounds"):
+        return config["sounds"]
+    pack_name = config.get("active_pack")
+    if not pack_name:
+        return {}
+    pack = config.get("packs", {}).get(pack_name, {})
+    return pack.get("sounds", {})
+
+
+def pool_for_status(sounds: dict, status: str) -> list[str]:
+    configured = sounds.get(status, [])
+    if isinstance(configured, str):
+        configured = [configured]
+    playable = [Path(entry).expanduser() for entry in configured]
+    return [str(path) for path in playable if path.is_file()]
+
+
+def find_player() -> str | None:
+    for player in AUDIO_PLAYERS:
+        if shutil.which(player):
+            return player
+    return None
+
+
+def play(sound_file: str) -> None:
+    player = find_player()
+    if not player:
+        log(f"no audio player found, wanted one of {', '.join(AUDIO_PLAYERS)}")
+        return
+    # Detached: the hook must not block Herdr while audio plays.
+    subprocess.Popen(
+        [player, sound_file],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+
+
+def main() -> int:
+    config = load_config()
+    data = event_data()
+    status = data.get("agent_status", "")
+    agent = data.get("agent", "")
+
+    if agent_is_muted(config, agent):
+        log(f"{status} {agent}: muted")
+        return 0
+
+    pool = pool_for_status(active_sounds(config), status)
+    if not pool:
+        log(f"{status} {agent or '-'}: no sounds configured")
+        return 0
+
+    chosen = random.choice(pool)
+    play(chosen)
+    # Pool files are often identically named (done.mp3 in several packs), so
+    # log the parent directory too or the log cannot show which was picked.
+    chosen_path = Path(chosen)
+    log(f"{status} {agent or '-'}: {chosen_path.parent.name}/{chosen_path.name}"
+        f" (1 of {len(pool)})")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

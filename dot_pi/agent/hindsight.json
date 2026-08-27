@@ -1,0 +1,15 @@
+{
+  "banks": {
+    "project": {
+      "enabled": true,
+      "derive": "manual",
+      "bankId": "coding"
+    }
+  },
+  "notifications": {
+    "startup": false
+  },
+  "hindsight": {
+    "baseUrl": "https://hindsight-api.tharris.cc"
+  }
+}

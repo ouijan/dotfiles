@@ -5,3 +5,7 @@
 .omo/
 .pi/
 node_modules/
+
+# Warcraft III audio for the herdr-agent-sounds plugin. Copyrighted Blizzard
+# assets and 2MB of binaries; this repo is public. Fetch with herdr-sounds-library.
+dot_config/herdr/sounds/library/

@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+#
+# Switch the active sound pack for the herdr-agent-sounds plugin.
+#
+# A pack is a named set of sound pools in the plugin config; switching rewrites
+# the single `active_pack` line and reloads Herdr. There are no files to copy
+# or symlink, because packs reference the committed library by path.
+#
+# Usage:
+#   herdr-soundpack                # show the active pack
+#   herdr-soundpack list           # list packs, marking the active one
+#   herdr-soundpack use wc3/peon   # switch and reload herdr
+#   herdr-soundpack pick           # fuzzy-pick a pack
+#   herdr-soundpack preview <pack> # play one sound from each of its pools
+#
+set -euo pipefail
+
+readonly CONFIG="$HOME/.config/herdr/plugins/config/toby.herdr-agent-sounds/config.toml"
+readonly SOURCE_CONFIG_REL="dot_config/herdr/plugins/config/toby.herdr-agent-sounds/config.toml"
+
+require_config() {
+  [[ -f "$CONFIG" ]] && return 0
+  echo "no plugin config at $CONFIG" >&2
+  echo "is toby.herdr-agent-sounds linked? herdr plugin list" >&2
+  exit 1
+}
+
+read_config() {
+  python3 -c "
+import sys, tomllib
+with open('$CONFIG','rb') as handle:
+    print(tomllib.load(handle).get('$1',''), end='')
+" 2>/dev/null
+}
+
+list_packs() {
+  python3 -c "
+import tomllib
+with open('$CONFIG','rb') as handle:
+    print('\n'.join(sorted(tomllib.load(handle).get('packs', {}))))
+"
+}
+
+current_pack() { read_config active_pack; }
+
+# Rewrite both the live config and its chezmoi source, so the change survives
+# the next `chezmoi apply` instead of being silently reverted.
+set_active_pack() {
+  local pack="$1"
+  local source_config
+  source_config="$(chezmoi source-path 2>/dev/null)/$SOURCE_CONFIG_REL"
+
+  local target
+  for target in "$CONFIG" "$source_config"; do
+    [[ -f "$target" ]] || continue
+    python3 - "$target" "$pack" <<'PY'
+import re, sys
+path, pack = sys.argv[1], sys.argv[2]
+with open(path) as handle:
+    text = handle.read()
+updated = re.sub(r'^active_pack\s*=.*$', f'active_pack = "{pack}"', text,
+                 count=1, flags=re.MULTILINE)
+with open(path, 'w') as handle:
+    handle.write(updated)
+PY
+  done
+}
+
+pool_files() {
+  local pack="$1" status="$2"
+  python3 -c "
+import os, tomllib
+with open('$CONFIG','rb') as handle:
+    packs = tomllib.load(handle).get('packs', {})
+pool = packs.get('$pack', {}).get('sounds', {}).get('$status', [])
+print('\n'.join(os.path.expanduser(entry) for entry in pool))
+"
+}
+
+reload_herdr() {
+  if herdr server reload-config >/dev/null 2>&1; then
+    echo "  herdr server reload-config ✓"
+  else
+    echo "  herdr not running — applies on next start"
+  fi
+}
+
+use_pack() {
+  local pack="$1"
+  if ! list_packs | grep -qx "$pack"; then
+    echo "no such pack: $pack" >&2
+    echo "try: herdr-soundpack list" >&2
+    exit 1
+  fi
+  set_active_pack "$pack"
+  echo "  active_pack = \"$pack\""
+  reload_herdr
+}
+
+show_list() {
+  local active
+  active="$(current_pack)"
+  while read -r pack; do
+    local done_count blocked_count
+    done_count="$(pool_files "$pack" done | grep -c . || true)"
+    blocked_count="$(pool_files "$pack" blocked | grep -c . || true)"
+    local marker="  "
+    [[ "$pack" == "$active" ]] && marker="* "
+    printf '%s%-14s done:%-2s blocked:%-2s\n' \
+      "$marker" "$pack" "$done_count" "$blocked_count"
+  done < <(list_packs)
+}
+
+preview_pack() {
+  local pack="$1" status sound_file
+  echo "$pack"
+  for status in done blocked; do
+    sound_file="$(pool_files "$pack" "$status" | head -1)"
+    [[ -f "$sound_file" ]] || continue
+    printf '  %-8s %s\n' "$status" "$(basename "$sound_file")"
+    afplay "$sound_file" 2>/dev/null || true
+  done
+}
+
+main() {
+  require_config
+  local command="${1:-current}"
+  case "$command" in
+    list)    show_list ;;
+    use)     use_pack "${2:?usage: herdr-soundpack use <pack>}" ;;
+    pick)    pick_pack ;;
+    preview) preview_pack "${2:?usage: herdr-soundpack preview <pack>}" ;;
+    current) current_pack; echo ;;
+    *)       echo "unknown command: $command" >&2; exit 1 ;;
+  esac
+}
+
+pick_pack() {
+  local chosen
+  chosen="$(list_packs | fzf --prompt='sound pack> ' --height=40%)" || return 0
+  [[ -n "$chosen" ]] && use_pack "$chosen"
+}
+
+main "$@"

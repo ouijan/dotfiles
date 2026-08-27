@@ -1,27 +1,83 @@
 {
-  "lastChangelogVersion": "0.84.2",
+  "lastChangelogVersion": "0.84.3",
   "defaultProvider": "anthropic",
-  "defaultModel": "claude-fable-5",
+  "defaultModel": "claude-opus-5",
   "defaultThinkingLevel": "medium",
   "theme": "catppuccin",
-  "skills": [
-    "~/.config/opencode/skills"
-  ],
+  "skills": ["~/.config/opencode/skills"],
+  "collapseChangelog": true,
+  "hideThinkingBlock": true,
+  "showLastPrompt": true,
+  "terminal": {
+    "showTerminalProgress": true
+  },
   "packages": [
     "npm:pi-claude-auth",
     "npm:pi-mcp-adapter",
-    "npm:@luxusai/pi-hindsight"
+    "npm:@luxusai/pi-hindsight",
+    "npm:pi-subagents",
+    "npm:@juicesharp/rpiv-ask-user-question"
   ],
   "warnings": {
     "anthropicExtraUsage": false
   },
   "enabledModels": [
     "anthropic/claude-fable-5",
-    "anthropic/claude-haiku-4-5",
-    "anthropic/claude-opus-4-8",
     "anthropic/claude-opus-5",
-    "anthropic/claude-sonnet-4-6",
+    "anthropic/claude-opus-4-8",
     "anthropic/claude-sonnet-5",
-    "claude-proxy/claude-sonnet-4-5-20250929"
-  ]
+    "anthropic/claude-sonnet-4-6",
+    "anthropic/claude-haiku-4-5"
+  ],
+  "subagents": {
+    "disableBuiltins": true
+  },
+  "weave": {
+    "footer": {
+      "lines": [
+        {
+          "left": ["model", "thinking"],
+          "middle": [],
+          "right": ["context", "cost"]
+        },
+        {
+          "left": ["cwd"],
+          "right": ["git"]
+        },
+        { "middle": ["hindsight", "mcp"] }
+      ],
+      "segments": {
+        "model": {
+          "icon": "󱚣",
+          "color": "accent"
+        },
+        "hindsight": {
+          "color": "dim",
+          "format": " {bank}"
+        },
+        "context": {
+          "color": "dim",
+          "format": "{used:1} ({percent:0}%)",
+          "unitCase": "upper"
+        },
+        "cwd": {
+          "icon": "󰉋",
+          "color": "dim",
+          "maxWidth": 30,
+          "truncate": "tail"
+        },
+        "git": {
+          "icon": "",
+          "color": "dim",
+          "maxWidth": 30,
+          "truncate": "tail",
+          "format": "{branch}"
+        },
+        "mcp": {
+          "color": "dim",
+          "format": " {enabled} enabled"
+        }
+      }
+    }
+  }
 }

@@ -2,9 +2,9 @@
 -- share one pane.
 --
 -- Round trip:
---   <leader>cr / <leader>cf  ->  tuicr opens in its own tab, jumped to the cursor line
+--   <leader>vr / <leader>vf  ->  tuicr opens in its own tab, jumped to the cursor line
 --   e (inside tuicr)         ->  file opens in THIS nvim, tuicr stays alive in its tab
---   <leader>cr again         ->  back to tuicr, exactly where it was
+--   <leader>vr again         ->  back to tuicr, exactly where it was
 --
 -- Nesting is impossible by construction: tuicr's $EDITOR is a shim that talks to
 -- this instance over $NVIM instead of starting a new one. See ~/.local/bin/tuicr-editor.

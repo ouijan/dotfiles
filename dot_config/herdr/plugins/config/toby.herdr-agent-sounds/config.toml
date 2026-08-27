@@ -1,0 +1,110 @@
+# Sound pools for the local herdr-agent-sounds plugin.
+# Plugin source: dotfiles/dot_config/herdr-agent-sounds
+# Audio library: dotfiles/dot_config/herdr/sounds/library (committed)
+#
+# Switch packs with `herdr-soundpack use <pack>`, which rewrites active_pack
+# below and reloads Herdr. Herdr's built-in [ui.sound] is disabled so these
+# do not double up.
+#
+# One file is chosen at random per event, which is why pools use every
+# variant a unit has rather than a single hand-picked line. That also means
+# no one has to work out which of PeonWhat1-4 says what.
+#
+# Statuses: pi and OpenCode report `working` and `done` only. `blocked` is
+# reported by agents with dedicated blocker detection (Claude Code, Kimi),
+# so those pools are configured but currently silent here.
+
+active_pack = "wc2/peon"
+
+
+# --- Orc Horde: grunty, the classic ------------------------------------
+[packs."wc3/peon".sounds]
+done = ["~/.config/herdr/sounds/library/Peon/PeonJobDone.mp3"]
+blocked = [
+  "~/.config/herdr/sounds/library/Peon/PeonWhat1.mp3",
+  "~/.config/herdr/sounds/library/Peon/PeonWhat2.mp3",
+  "~/.config/herdr/sounds/library/Peon/PeonWhat3.mp3",
+  "~/.config/herdr/sounds/library/Peon/PeonWhat4.mp3",
+]
+working = []
+
+
+# --- Human Alliance: deferential, slightly put-upon ---------------------
+[packs.peasant.sounds]
+done = ["~/.config/herdr/sounds/library/Peasant/PeasantBuildingComplete1.mp3"]
+blocked = [
+  "~/.config/herdr/sounds/library/Peasant/PeasantWhat1.mp3",
+  "~/.config/herdr/sounds/library/Peasant/PeasantWhat2.mp3",
+  "~/.config/herdr/sounds/library/Peasant/PeasantWhat3.mp3",
+  "~/.config/herdr/sounds/library/Peasant/PeasantWhat4.mp3",
+]
+working = []
+
+
+# --- Undead Scourge: the Acolyte has no completion line, so its four
+# --- affirmatives ("Yes, master.", "Thy will be done.", ...) serve as done.
+[packs.acolyte.sounds]
+done = [
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteYes1.mp3",
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteYes2.mp3",
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteYes3.mp3",
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteYes4.mp3",
+]
+blocked = [
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteWhat1.mp3",
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteWhat2.mp3",
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteWhat3.mp3",
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteWhat4.mp3",
+  "~/.config/herdr/sounds/library/Acolyte/AcolyteWhat5.mp3",
+]
+working = []
+
+
+# --- Night Elf Sentinels: tersest of the lot ----------------------------
+[packs.night-elf.sounds]
+done = [
+  "~/.config/herdr/sounds/library/Archer/ArcherYes2.mp3",
+  "~/.config/herdr/sounds/library/Archer/ArcherYes4.mp3",
+]
+blocked = [
+  "~/.config/herdr/sounds/library/Archer/ArcherWhat1.mp3",
+  "~/.config/herdr/sounds/library/Archer/ArcherWhat2.mp3",
+  "~/.config/herdr/sounds/library/Archer/ArcherWhat3.mp3",
+  "~/.config/herdr/sounds/library/Archer/ArcherWhat4.mp3",
+]
+working = [
+  "~/.config/herdr/sounds/library/Archer/ArcherYes3.mp3",
+  "~/.config/herdr/sounds/library/Archer/ArcherYes3.mp3",
+  "~/.config/herdr/sounds/library/Archer/ArcherYes4.mp3",
+  "~/.config/herdr/sounds/library/Archer/ArcherYesAttack1.mp3",
+]
+
+
+# --- Warcraft II: the originals, no upstream to re-fetch ----------------
+[packs.peon.sounds]
+done = ["~/.config/herdr/sounds/library/Local/JobsDone.mp3"]
+blocked = ["~/.config/herdr/sounds/library/Local/WorkWork.mp3"]
+working = []
+
+
+# --- Misc: Crypt Fiend and Mortar Team, for when the rest get boring ----
+[packs.misc.sounds]
+done = [
+  "~/.config/herdr/sounds/library/MortarTeam/MortarTeamReady1.mp3",
+  "~/.config/herdr/sounds/library/CryptFiend/CryptFiendYes1.mp3",
+  "~/.config/herdr/sounds/library/CryptFiend/CryptFiendYes2.mp3",
+  "~/.config/herdr/sounds/library/CryptFiend/CryptFiendYes3.mp3",
+  "~/.config/herdr/sounds/library/CryptFiend/CryptFiendYes4.mp3",
+]
+blocked = [
+  "~/.config/herdr/sounds/library/CryptFiend/CryptFiendWhat1.mp3",
+  "~/.config/herdr/sounds/library/CryptFiend/CryptFiendWhat2.mp3",
+  "~/.config/herdr/sounds/library/CryptFiend/CryptFiendWhat3.mp3",
+  "~/.config/herdr/sounds/library/CryptFiend/CryptFiendWhat4.mp3",
+]
+working = []
+
+# Mute a noisy agent by name, e.g. opencode = "off".
+# Agent names come from the event payload: pi, opencode, claude, codex
+[agents]
+

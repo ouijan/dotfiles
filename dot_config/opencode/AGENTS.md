@@ -26,3 +26,9 @@
 - Don't use `any` type.
 - Don't use `| undefined` when declaring function arguments. Instead, use an optional argument or a default value.
 - Don't use `return undefined` if a simple `return` will suffice.
+
+### Principle Repo
+
+Follow these rules when working within the Principle monorepo `~/code/github.com/principle-theorem/principle-theorem/`
+
+- Never run any variation of `nx affected`, it will crash my machine. Instead target the projects directly with `nx run <project>:<target>`.
