@@ -4,9 +4,23 @@
 # undercurl.src hash: {{ include "dot_config/terminfo/undercurl.src" | sha256sum }}
 set -eu
 
+SRC="${HOME}/.config/terminfo/undercurl.src"
+
 if ! command -v tic >/dev/null 2>&1; then
     echo "tic not found; skipping terminfo compile" >&2
     exit 0
 fi
 
-tic -x "${HOME}/.config/terminfo/undercurl.src"
+# -o is mandatory. tic honours $TERMINFO, and Ghostty exports it pointing at
+# its own app bundle, so a bare `tic -x` silently installs the entries inside
+# Ghostty.app where the next upgrade deletes them.
+tic -x -o "${HOME}/.terminfo" "$SRC"
+
+# sudo resets HOME, so root never sees ~/.terminfo and ncurses aborts with
+# "cannot initialize terminal type" (e.g. sudo systemctl edit). Install
+# system-wide when that needs no password prompt.
+if [ "$(uname -s)" = "Linux" ] && sudo -n true 2>/dev/null; then
+    sudo tic -x -o /etc/terminfo "$SRC"
+elif [ "$(uname -s)" = "Linux" ]; then
+    echo "note: run 'sudo tic -x -o /etc/terminfo $SRC' for TUIs under sudo" >&2
+fi

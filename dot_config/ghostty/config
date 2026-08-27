@@ -31,3 +31,12 @@ macos-option-as-alt = left
 
 
 keybind = shift+enter=text:\x1b[13;2u
+
+# Shell integration. Defaults disable the last three:
+#   sudo         - sudo resets HOME, losing ~/.terminfo; this passes TERMINFO
+#                  through so TUIs under sudo still start
+#   ssh-terminfo - installs xterm-ghostty on the remote on first connect
+#   ssh-env      - falls back to TERM=xterm-256color if that install fails
+# Note ssh-terminfo only fires when TERM=xterm-ghostty, so it does nothing
+# inside herdr or tmux panes; those rely on the -uc entries instead.
+shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo,path

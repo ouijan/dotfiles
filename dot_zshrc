@@ -1,3 +1,32 @@
+# -----------------------------------------------
+# Terminal capabilities
+# -----------------------------------------------
+# herdr hardcodes TERM=xterm-256color for its panes, and that terminfo has no
+# Smulx/Setulc, so nvim draws flat uncoloured underlines instead of coloured
+# undercurl. The -uc entries (~/.config/terminfo/undercurl.src) add both.
+# Guarded on infocmp so a host missing the compiled entry degrades quietly
+# rather than dying with "cannot initialize terminal type".
+if [[ -n "$HERDR_ENV" && "$TERM" == "xterm-256color" ]] \
+  && infocmp -x xterm-256color-uc >/dev/null 2>&1; then
+  export TERM=xterm-256color-uc
+fi
+
+# ssh sends TERM verbatim, so a -uc name reaches hosts that have no such
+# terminfo file and every remote TUI dies. Hosts managed by this chezmoi repo
+# compile their own copy, so they keep the suffix; everything else is stripped
+# back to the stock name.
+TERMINFO_UC_HOSTS=(tristram)
+ssh() {
+  local arg
+  for arg in "$@"; do
+    if (( ${TERMINFO_UC_HOSTS[(Ie)$arg]} )); then
+      command ssh "$@"
+      return
+    fi
+  done
+  TERM="${TERM%-uc}" command ssh "$@"
+}
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -41,6 +70,15 @@ fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 fpath=($HOME/.docker/completions $fpath)
 # Personal completions (~/.zsh/completions)
 fpath=(~/.zsh/completions $fpath)
+
+# Local bin scripts (cross-platform). Must come BEFORE oh-my-zsh so the nvm
+# plugin's PATH entry lands in front of it — otherwise ~/.local/bin/node (the
+# Hermes agent's pinned runtime) shadows the nvm version for every project.
+export PATH="$HOME/.local/bin:$PATH"
+
+# Switch node to the version in .nvmrc on cd. The nvm plugin is opt-in: without
+# this zstyle it never registers its chpwd hook and .nvmrc is silently ignored.
+zstyle ':omz:plugins:nvm' autoload yes
 
 # Load Oh My Zsh + Powerlevel10k (oh-my-zsh runs compinit once for everything)
 source $ZSH/oh-my-zsh.sh
@@ -105,6 +143,9 @@ alias k="kubectl"
 # herdr
 alias hp="herdr-project"
 
+# Fake flagship model provider for opencode (joke)
+alias sycophant="bun run ~/code/github.com/ouijan/artificial-untelegence/src/server.ts"
+
 # Tiling WM: apply dotfiles, reload aerospace, hot-apply borders.
 # borders updates its running instance in place, so no restart is needed.
 wm-reload() {
@@ -160,9 +201,6 @@ export HINDSIGHT_PROJECT_BANK_ID="coding"                     # shared bank acro
 # attributable via its hardcoded harness:pi tag only.
 export HINDSIGHT_AUTHOR="tharris"
 export HINDSIGHT_RETAIN_TAGS="source:opencode,author:${HINDSIGHT_AUTHOR}"
-
-# Local bin scripts (cross-platform)
-export PATH="$HOME/.local/bin:$PATH"
 
 # MacOS specific
 if [[ -f "/opt/homebrew/bin/brew" ]] then
