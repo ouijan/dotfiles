@@ -16,11 +16,19 @@ fi
 # Ghostty.app where the next upgrade deletes them.
 tic -x -o "${HOME}/.terminfo" "$SRC"
 
+[ "$(uname -s)" = "Linux" ] || exit 0
+
 # sudo resets HOME, so root never sees ~/.terminfo and ncurses aborts with
-# "cannot initialize terminal type" (e.g. sudo systemctl edit). Install
-# system-wide when that needs no password prompt.
-if [ "$(uname -s)" = "Linux" ] && sudo -n true 2>/dev/null; then
-    sudo tic -x -o /etc/terminfo "$SRC"
-elif [ "$(uname -s)" = "Linux" ]; then
-    echo "note: run 'sudo tic -x -o /etc/terminfo $SRC' for TUIs under sudo" >&2
+# "cannot initialize terminal type" (e.g. sudo systemctl edit). Install into the
+# system dir ncurses actually searches. That is /etc/terminfo on Debian but
+# /usr/share/terminfo on Arch/CachyOS, so ask ncurses rather than guess: the
+# first `infocmp -D` path outside $HOME is the system database.
+system_dir="$(infocmp -D 2>/dev/null | grep -v "^${HOME}" | head -n1 || true)"
+[ -n "$system_dir" ] || system_dir=/etc/terminfo
+
+if sudo -n true 2>/dev/null; then
+    sudo tic -x -o "$system_dir" "$SRC"
+    echo "terminfo: installed to $system_dir" >&2
+else
+    echo "note: for TUIs under sudo, run: sudo tic -x -o $system_dir $SRC" >&2
 fi
