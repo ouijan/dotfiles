@@ -52,12 +52,14 @@ export interface WeaveToolsConfig {
 	enabled: boolean;
 	/** Collapse each turn's tool calls to one counter line (ctrl+o expands). */
 	minimize: boolean;
-	/** Counter template: `{count}` `{plural}` `{tools}` `{errors}` `{last}` `{thinking}`. */
+	/** Counter template: `{count}` `{plural}` `{tools}` `{errors}` `{last}`. */
 	minimizedFormat?: string;
-	/** Fold the turn's thinking into the counter line instead of pi's label. */
+	/** Fold the turn's thinking into the tool block instead of pi's label. */
 	thinking: boolean;
-	/** Characters of thinking kept on the counter line. */
+	/** Characters of thinking kept, before wrapping into the block. */
 	thinkingWidth: number;
+	/** How many wrapped thinking lines the block may carry. */
+	thinkingLines: number;
 	/** Tools that always render as pi draws them, never folded into a group. */
 	exclude: string[];
 }
@@ -99,7 +101,8 @@ const DEFAULT_TOOLS: WeaveToolsConfig = {
 	enabled: true,
 	minimize: true,
 	thinking: true,
-	thinkingWidth: 72,
+	thinkingWidth: 240,
+	thinkingLines: 2,
 	// Grouping is by row component, so it reaches every tool: nothing to opt in.
 	exclude: [],
 };
@@ -196,6 +199,7 @@ function parseTools(value: unknown): WeaveToolsConfig {
 		minimizedFormat: asOptionalString(raw.minimizedFormat),
 		thinking: typeof raw.thinking === "boolean" ? raw.thinking : DEFAULT_TOOLS.thinking,
 		thinkingWidth: typeof raw.thinkingWidth === "number" ? raw.thinkingWidth : DEFAULT_TOOLS.thinkingWidth,
+		thinkingLines: typeof raw.thinkingLines === "number" ? raw.thinkingLines : DEFAULT_TOOLS.thinkingLines,
 		exclude: asStringArray(raw.exclude) ?? DEFAULT_TOOLS.exclude,
 	};
 }

@@ -2,6 +2,9 @@
 
 ## Communication
 
+- Keep communication brief, clear, and actionable.
+- DO NOT present findings with things like "It's worse than I thought.", instead focus on the actionable outcomes, and avoid unnecessary commentary.
+
 ## Rules
 
 - Never commit/push to main directly

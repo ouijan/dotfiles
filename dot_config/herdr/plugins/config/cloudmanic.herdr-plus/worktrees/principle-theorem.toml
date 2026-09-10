@@ -18,14 +18,14 @@ name = "agent"
   split = "right"
   command = "nvim"
 
-[[tabs]]
-name = "git"
-command = "lazygit"
-
-[[tabs]]
-name = "terminal"   # two empty shells, side by side
-
-  [[tabs.panes]]
-
-  [[tabs.panes]]
-  split = "right"
+# [[tabs]]
+# name = "git"
+# command = "lazygit"
+#
+# [[tabs]]
+# name = "terminal"   # two empty shells, side by side
+#
+#   [[tabs.panes]]
+#
+#   [[tabs.panes]]
+#   split = "right"

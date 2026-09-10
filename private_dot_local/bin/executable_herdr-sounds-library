@@ -7,8 +7,9 @@
 # CryptFiendYes*.wav files but only three listed "Yes" lines), so file numbers
 # cannot be mapped to quotes by position. Listening is the only reliable route.
 #
-# The library is committed to the dotfiles repo, so the plugin config can
-# reference any quote by path without a separate fetch step.
+# The audio is NOT committed: copyrighted Blizzard assets in a public repo. It
+# is gitignored and chezmoi-ignored, so each machine fetches its own copy here
+# and the plugin config references quotes by path under ~/.config.
 #
 # Usage:
 #   herdr-sounds-library                    # refresh units already present
@@ -20,10 +21,10 @@ readonly WIKI_API="https://warcraft.wiki.gg/api.php"
 readonly WIKI_IMAGES="https://warcraft.wiki.gg/images"
 readonly BROWSER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
 readonly REQUEST_DELAY_SECONDS=2
-# Written into the chezmoi SOURCE tree, not ~/.config: writing to the applied
-# copy would be overwritten by the next apply, and using `chezmoi add` would
-# trigger autoCommit and sweep in every unrelated dirty file.
-LIBRARY_DIR="$(chezmoi source-path)/dot_config/herdr/sounds/library"
+# Written straight to the runtime path. `.config/herdr/sounds` is in
+# .chezmoiignore, so apply never touches it and there is no source-tree copy to
+# keep in sync. This is the same path the plugin config reads.
+LIBRARY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/herdr/sounds/library"
 readonly LIBRARY_DIR
 
 # Units already in the library. `Local` holds files with no wiki upstream.
@@ -92,7 +93,7 @@ main() {
 
   echo
   echo "browse: open $LIBRARY_DIR"
-  echo "then reference files from the plugin config and: chezmoi apply"
+  echo "then reference files from the plugin config: herdr-soundpack list"
 }
 
 main "$@"

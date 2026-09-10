@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.84.3",
+  "lastChangelogVersion": "0.84.4",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5",
   "defaultThinkingLevel": "medium",
@@ -24,10 +24,10 @@
   "enabledModels": [
     "anthropic/claude-fable-5",
     "anthropic/claude-opus-5",
-    "anthropic/claude-opus-4-8",
     "anthropic/claude-sonnet-5",
-    "anthropic/claude-sonnet-4-6",
-    "anthropic/claude-haiku-4-5"
+    "anthropic/claude-haiku-4-5",
+    "ollama/gemma4:latest",
+    "ollama/gpt-oss:latest"
   ],
   "subagents": {
     "disableBuiltins": true

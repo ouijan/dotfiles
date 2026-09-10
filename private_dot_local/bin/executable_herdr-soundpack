@@ -4,7 +4,8 @@
 #
 # A pack is a named set of sound pools in the plugin config; switching rewrites
 # the single `active_pack` line and reloads Herdr. There are no files to copy
-# or symlink, because packs reference the committed library by path.
+# or symlink, because packs reference the audio library by path. That library is
+# gitignored, so fetch it per-machine first: herdr-sounds-library <Unit>...
 #
 # Usage:
 #   herdr-soundpack                # show the active pack

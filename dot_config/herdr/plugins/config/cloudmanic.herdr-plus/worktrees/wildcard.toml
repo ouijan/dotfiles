@@ -4,12 +4,17 @@
 repo = "*"
 
 [[tabs]]
-name = "agent"
-command = "pi"
+name = "1"
 
-[[tabs]]
-name = "lazygit"
-command = "lazygit"
+  [[tabs.panes]]
+  command = "pi"
 
-[[tabs]]
-name = "terminal"   # no command — just an empty shell
+  [[tabs.panes]]
+  split = "right"
+  command = "nvim"
+
+  [[tabs.panes]]
+  split = "bottom"
+
+
+

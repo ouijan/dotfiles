@@ -44,15 +44,36 @@ export default function weave(pi: ExtensionAPI) {
 	/** Set once the TUI exists; /theme can swap the instance, so read it late. */
 	let getTheme: () => CounterTheme | undefined = () => undefined;
 
+	/**
+	 * The ctx behind `getTheme` dies with its session (`/new`, `/resume`,
+	 * `/fork`, `/reload`), and reading `ctx.ui` after that throws. This instance
+	 * gets a fresh ctx on the next `session_start`; until then, report no theme
+	 * so the row patch falls back to pi's own rows.
+	 */
+	function currentTheme(): CounterTheme | undefined {
+		try {
+			return getTheme();
+		} catch {
+			getTheme = () => undefined;
+			return;
+		}
+	}
+
 	// Only worth folding when pi already collapses thinking to a label: with full
 	// thinking blocks on screen the digest would just repeat them.
 	const foldThinking = startup.tools.enabled && startup.tools.thinking && startup.hideThinkingBlock;
 
-	// The row patch must be in place at load time, before the first turn.
-	if (startup.tools.enabled) {
-		groupToolRows({ config: startup.tools, groups, getTheme: () => getTheme() });
-	}
-	if (foldThinking) hideGroupedThinkingLabels(() => groups.collapsed);
+	// The row patch must be in place at load time, before the first turn. Both
+	// patches are installed once per process but rebound on every load: the
+	// disabled cases publish an inert binding rather than skipping the call, or a
+	// previous instance's binding would keep driving the patch.
+	groupToolRows({ config: startup.tools, groups, getTheme: currentTheme });
+	// A message's own tool calls carry the digest; so does the group already on
+	// screen, which stops a bare label floating under the block while the model
+	// thinks between calls.
+	hideGroupedThinkingLabels(
+		(hasToolCalls) => foldThinking && groups.collapsed && (hasToolCalls || groups.hasLiveGroup),
+	);
 
 	registerAgentRoster(pi, startup.roster);
 	registerSkillDiscovery(pi, startup.skills);

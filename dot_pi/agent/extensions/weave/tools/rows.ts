@@ -10,82 +10,27 @@
  *
  * `ToolExecutionComponent.render` is the one place every tool row passes
  * through, whoever registered it. Patching it groups the lot, and lets weave
- * emit the counter line as plain text: pi's row otherwise wraps content in a
- * `Box` whose background is picked from the *leader's* state, so a group of
- * calls wore the colour of whichever one happened to be first. A summary is
- * not a tool row, so it gets no tool background at all; the tool names inside
- * it carry the colour instead, one per name, worst state winning.
+ * emit the group as its own small box: pi's row picks its background from that
+ * one call's state, so a group of calls wore the colour of whichever one
+ * happened to be first. Weave paints the block from the *worst* state in the
+ * group instead, and colours each tool name inside it by its own state.
  *
  * Same borrowed-class technique — and same caveat — as tools/thinking.ts: pi's
  * bundle aliases `@earendil-works/pi-coding-agent` to its own live module
  * instances, so extensions and the UI share one class object.
  */
 
+
 import { ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
-import { DEFAULT_MINIMIZED_FORMAT, minimizedLine, type CallState, type CounterTheme, type ToolGroups } from "./groups.ts";
-import type { WeaveToolsConfig } from "../config.ts";
+import { installRowGrouping, type PatchableProto, type RowGroupingOptions } from "./rows-patch.ts";
 
-/** Private row state weave reads. Names track pi's own fields. */
-interface ToolRow {
-	toolName: string;
-	toolCallId: string;
-	expanded: boolean;
-	isPartial: boolean;
-	result?: { isError: boolean };
-	invalidate(): void;
-}
-
-interface PatchableProto {
-	render?: (width: number) => string[];
-	weaveRowsPatched?: boolean;
-}
-
-function callState(row: ToolRow): CallState {
-	if (!row.result || row.isPartial) return "pending";
-	return row.result.isError ? "error" : "ok";
-}
-
-export interface RowGroupingOptions {
-	config: WeaveToolsConfig;
-	groups: ToolGroups;
-	/** Read late: the theme can change under us via /theme. */
-	getTheme: () => CounterTheme | undefined;
-}
+export type { RowGroupingOptions } from "./rows-patch.ts";
 
 /**
- * Collapse grouped tool rows to a single counter line.
- * Returns false when the class cannot be patched.
+ * Collapse grouped tool rows to a single counter line, and rebind the patch to
+ * this extension instance. See rows-patch.ts for why the body lives elsewhere.
+ * Returns false when the class cannot be patched or is already patched.
  */
 export function groupToolRows(options: RowGroupingOptions): boolean {
-	const { config, groups, getTheme } = options;
-	const format = config.minimizedFormat ?? DEFAULT_MINIMIZED_FORMAT;
-	const excluded = new Set(config.exclude);
-
-	try {
-		const proto = ToolExecutionComponent?.prototype as unknown as PatchableProto | undefined;
-		const original = proto?.render;
-		if (!proto || typeof original !== "function" || proto.weaveRowsPatched) return false;
-
-		proto.render = function patchedRender(width: number): string[] {
-			const row = this as unknown as ToolRow;
-			const theme = getTheme();
-			if (!theme || excluded.has(row.toolName)) return original.call(this, width);
-
-			const grouped = groups.join(row.toolCallId, row.toolName, () => row.invalidate());
-			groups.noteExpanded(row.expanded);
-			if (!grouped) return original.call(this, width);
-
-			groups.setState(row.toolCallId, callState(row));
-			if (!groups.collapsed) return original.call(this, width);
-			if (!groups.isLeader(row.toolCallId)) return [];
-
-			const values = groups.values(row.toolCallId, theme);
-			return ["", minimizedLine(format, values, theme, width)];
-		};
-
-		proto.weaveRowsPatched = true;
-		return true;
-	} catch {
-		return false;
-	}
+	return installRowGrouping(ToolExecutionComponent?.prototype as unknown as PatchableProto | undefined, options);
 }

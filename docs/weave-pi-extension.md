@@ -310,12 +310,22 @@ so rows keep pi's stock shell, spacing and tint.
 Owning `render` also fixes the counter's appearance. Pi wraps row content in a
 `Box` whose background comes from `toolPendingBg`/`toolSuccessBg`/`toolErrorBg`
 according to *that row's* state — so a group of calls wore whatever colour the
-leader happened to have. A summary is not a tool row, so it now renders as two
-plain strings (one blank, one line) with no tool background. Status shows in
-the tool names instead: each name in `{tools}` is coloured by the worst state
-of the calls behind it — `dim` pending, `toolTitle` done, `error` failed. The
-line is dimmed end to end and every coloured value re-opens `dim` after its own
-`\x1b[39m`, since pi's `theme.fg` resets foreground only.
+leader happened to have. Weave paints its own block instead, mirroring pi's
+`Box(1, 1)`: an untinted separator line (so the block doesn't butt up against
+the message above it), a blank background row, the counter line, the turn's
+thinking wrapped underneath (`weave.tools.thinkingLines`, default 2), another
+blank row — every painted line padded to the full width so the background reads
+as one box. The
+background token comes from the *worst* state in the group, and each name in
+`{tools}` is coloured by the worst state of the calls behind it — `dim`
+pending, `toolTitle` done, `error` failed. The counter line is dimmed end to
+end and every coloured value re-opens `dim` after its own `\x1b[39m`, since
+pi's `theme.fg` resets foreground only.
+
+Thinking sits on its own line inside the block rather than sharing the counter
+line, where it was squeezed into whatever columns the counts left over. The
+digest takes whole sentences from the end of the last thinking block while they
+fit `thinkingWidth` (240 chars), then wraps to `thinkingLines`.
 
 **Group boundaries are text, not turns.** A group was originally one assistant
 turn (`turn_start`). That reasoning — a loop-scoped counter would be pinned
@@ -344,8 +354,8 @@ patch is guarded (typeof check, idempotence flag, try/catch) and no-ops if a
 future pi version changes shape. Same caveat for the private fields it reads
 (`toolName`, `toolCallId`, `expanded`, `isPartial`, `result`).
 
-Template placeholders: `{count}` `{plural}` `{tools}` `{errors}` `{last}`
-`{thinking}`.
+Template placeholders: `{count}` `{plural}` `{tools}` `{errors}` `{last}`.
+Thinking is no longer a placeholder — it renders on its own line(s) below.
 
 ```jsonc
 {
@@ -354,6 +364,9 @@ Template placeholders: `{count}` `{plural}` `{tools}` `{errors}` `{last}`
       "enabled": true,      // false → pi's tools are left completely alone
       "minimize": true,     // one counter line per group; ctrl+o expands
       "minimizedFormat": "🔧 {count} tool call{plural} {tools} {errors}",
+      "thinking": true,     // fold the turn's thinking into the block
+      "thinkingWidth": 240, // characters of digest kept before wrapping
+      "thinkingLines": 2,   // wrapped thinking lines the block may carry
       "exclude": []         // tool names that always render as pi draws them
     }
   }

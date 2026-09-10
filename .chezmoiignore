@@ -26,6 +26,10 @@ AGENTS.md
 !.config/herdr/plugins/config
 .config/herdr/plugins/config/*
 !.config/herdr/plugins/config/cloudmanic.herdr-plus
+# Warcraft audio for the herdr-agent-sounds plugin. Copyrighted Blizzard assets
+# and 2MB of binaries, and this repo is public, so the library is gitignored and
+# fetched per-machine by `herdr-sounds-library` straight into ~/.config.
+.config/herdr/sounds
 # Sound pools for the local herdr-agent-sounds plugin.
 !.config/herdr/plugins/config/toby.herdr-agent-sounds
 .config/herdr/plugins/config/toby.herdr-agent-sounds/*

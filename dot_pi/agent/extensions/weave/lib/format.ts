@@ -101,6 +101,32 @@ export function fitToWidth(text: string, maxWidth: number): string {
 	return truncateToWidth(text, maxWidth, ELLIPSIS);
 }
 
+/**
+ * Word-wrap plain text into at most `maxLines` lines of `width` columns. The
+ * last kept line gains an ellipsis when text was dropped, so a clipped thought
+ * still reads as clipped.
+ */
+export function wrapText(text: string, width: number, maxLines: number): string[] {
+	if (width <= 0 || maxLines <= 0) return [];
+	const words = text.split(/\s+/).filter((word) => word.length > 0);
+	const lines: string[] = [];
+	let current = "";
+	for (const word of words) {
+		const candidate = current ? `${current} ${word}` : word;
+		if (visibleWidth(candidate) <= width) {
+			current = candidate;
+			continue;
+		}
+		lines.push(current || truncateText(word, width, "head"));
+		current = current ? word : "";
+	}
+	if (current) lines.push(current);
+	if (lines.length <= maxLines) return lines;
+	const kept = lines.slice(0, maxLines);
+	kept[maxLines - 1] = truncateText(`${kept[maxLines - 1]} …`, width, "head");
+	return kept;
+}
+
 /** Strip ANSI/OSC/APC sequences (used when weave overrides pre-styled text). */
 export function stripAnsi(text: string): string {
 	return stripTerminalSequences(text);

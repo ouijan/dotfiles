@@ -12,12 +12,13 @@
  * re-render of an old row (scroll, resize) never re-joins it to the current
  * group and inflates the count.
  *
- * Minimized, only the group leader renders — one line, `minimizedFormat` — and
- * every other row renders no lines at all (see tools/rows.ts). ctrl+o
- * (app.tools.expand) expands; `/weave tools` toggles.
+ * Minimized, only the group leader renders — a small box, `minimizedFormat` on
+ * its first line and the turn's thinking wrapped underneath, on the shared tool
+ * background — and every other row renders no lines at all (see tools/rows.ts).
+ * ctrl+o (app.tools.expand) expands; `/weave tools` toggles.
  */
 
-import { expandTemplate, fitToWidth, truncateText, visibleWidth } from "../lib/format.ts";
+import { expandTemplate, fitToWidth, visibleWidth, wrapText } from "../lib/format.ts";
 
 /** Re-render is deferred: invalidating another row mid-pass would reenter it. */
 function defer(callback: () => void): void {
@@ -30,6 +31,7 @@ export type CallState = "pending" | "ok" | "error";
 /** Theme surface the counter line needs (subset of pi's Theme). */
 export interface CounterTheme {
 	fg(color: string, text: string): string;
+	bg(color: string, text: string): string;
 	getFgAnsi(color: string): string;
 	italic?(text: string): string;
 }
@@ -42,6 +44,13 @@ const STATE_COLOR: Record<CallState, string> = {
 
 /** Worst state wins: one failure colours the whole name red. */
 const STATE_RANK: Record<CallState, number> = { ok: 0, pending: 1, error: 2 };
+
+/** pi's own tool-row backgrounds, so a group reads as one tool block. */
+const STATE_BG: Record<CallState, string> = {
+	pending: "toolPendingBg",
+	ok: "toolSuccessBg",
+	error: "toolErrorBg",
+};
 
 interface Group {
 	ids: string[];
@@ -93,6 +102,15 @@ function toolBreakdown(group: Group, theme: CounterTheme): string {
 
 function failureCount(group: Group): number {
 	return [...group.states.values()].filter((state) => state === "error").length;
+}
+
+/** The worst state in the group: error beats pending beats ok. */
+function groupState(group: Group): CallState {
+	let worst: CallState = "ok";
+	for (const state of group.states.values()) {
+		if (STATE_RANK[state] > STATE_RANK[worst]) worst = state;
+	}
+	return worst;
 }
 
 export class ToolGroups {
@@ -165,6 +183,20 @@ export class ToolGroups {
 		return this.groupOf.get(toolCallId)?.ids[0] === toolCallId;
 	}
 
+	/** Background state of the row's group: error beats pending beats ok. */
+	stateOf(toolCallId: string): CallState {
+		const group = this.groupOf.get(toolCallId);
+		return group ? groupState(group) : "pending";
+	}
+
+	/**
+	 * True while a group on screen is carrying this turn's thinking digest — the
+	 * signal that pi's own `Thinking...` label would be a duplicate.
+	 */
+	get hasLiveGroup(): boolean {
+		return this.running && this.current.ids.length > 0;
+	}
+
 	/** Template values for the minimized line of the row's group. */
 	values(toolCallId: string, theme: CounterTheme): Record<string, string> {
 		const group = this.groupOf.get(toolCallId) ?? this.current;
@@ -194,34 +226,70 @@ export class ToolGroups {
 	}
 }
 
-export const DEFAULT_MINIMIZED_FORMAT = "🔧 {count} tool call{plural} {tools} {errors} {thinking}";
+export const DEFAULT_MINIMIZED_FORMAT = "🔧 {count} tool call{plural} {tools} {errors}";
 
-/**
- * The counter line, dimmed end to end. Coloured values re-open `dim` after
- * their own reset, so the base styling carries across them.
- */
-export function minimizedLine(
-	format: string,
-	values: Record<string, string>,
-	theme: CounterTheme,
-	width: number,
-): string {
-	const withoutThinking = expandTemplate(format, { ...values, thinking: "" });
-	const room = width - visibleWidth(withoutThinking) - 1;
-	const thinking = styleThinking(theme, values.thinking, room);
-	const body = expandTemplate(format, { ...values, thinking });
-	// The counts alone can outgrow a narrow terminal, so clamp regardless.
-	return `${theme.getFgAnsi("dim")}${fitToWidth(body, width)}\u001b[39m`;
+/** Matches pi's tool `Box(1, 1)`: one column of side padding, one blank row. */
+const PAD_X = 1;
+
+/** The `· ` marker that opens the thought; continuations align under it. */
+const THINKING_PREFIX = "· ";
+const THINKING_INDENT = "  ";
+
+export interface MinimizedBlock {
+	format: string;
+	values: Record<string, string>;
+	theme: CounterTheme;
+	width: number;
+	state: CallState;
+	/** How many wrapped thinking lines the block may carry. 0 hides them. */
+	thinkingLines: number;
 }
 
-/** Width of the `· ` marker that prefixes the thought inside `room`. */
-const THINKING_PREFIX_WIDTH = 2;
+/**
+ * The group as one padded block on pi's tool background: counts on the first
+ * line, the turn's thought wrapped underneath. Every line is padded to `width`
+ * so the background reads as a single box, and an untinted line opens the block
+ * so it doesn't butt up against the message above it.
+ */
+export function minimizedBlock(block: MinimizedBlock): string[] {
+	const { theme, width, state } = block;
+	const contentWidth = Math.max(1, width - PAD_X * 2);
+	const body = [counterLine(block, contentWidth), ...thinkingLines(block, contentWidth)];
+	const blank = backgroundLine("", theme, state, width);
+	return ["", blank, ...body.map((line) => backgroundLine(line, theme, state, width)), blank];
+}
+
+/** Pad to the full width and paint the tool background over the lot. */
+function backgroundLine(text: string, theme: CounterTheme, state: CallState, width: number): string {
+	const content = text ? `${" ".repeat(PAD_X)}${fitToWidth(text, width - PAD_X)}` : "";
+	const padding = " ".repeat(Math.max(0, width - visibleWidth(content)));
+	return theme.bg(STATE_BG[state], `${content}${padding}`);
+}
+
+/**
+ * The counts, dimmed end to end. Coloured values re-open `dim` after their own
+ * reset, so the base styling carries across them.
+ */
+function counterLine(block: MinimizedBlock, contentWidth: number): string {
+	const { format, values, theme } = block;
+	const body = expandTemplate(format, { ...values, thinking: "" });
+	// The counts alone can outgrow a narrow terminal, so clamp regardless.
+	return `${theme.getFgAnsi("dim")}${fitToWidth(body, contentWidth)}\u001b[39m`;
+}
 
 /** The turn's thought, styled as thinking so it reads apart from the counts. */
-function styleThinking(theme: CounterTheme, text: string, room: number): string {
-	if (!text || room < 8) return "";
-	const textRoom = room - THINKING_PREFIX_WIDTH;
-	const thought = theme.fg("thinkingText", `· ${truncateText(text, textRoom, "head")}`);
-	const styled = theme.italic ? theme.italic(thought) : thought;
-	return `${styled}${theme.getFgAnsi("dim")}`;
+function thinkingLines(block: MinimizedBlock, contentWidth: number): string[] {
+	const { theme, values, thinkingLines: maxLines } = block;
+	const textWidth = contentWidth - visibleWidth(THINKING_PREFIX);
+	if (!values.thinking || textWidth < 8) return [];
+	const wrapped = wrapText(values.thinking, textWidth, maxLines);
+	return wrapped.map((line, index) => {
+		const marker = index === 0 ? THINKING_PREFIX : THINKING_INDENT;
+		return styleThinking(theme, `${marker}${line}`);
+	});
+}
+
+function styleThinking(theme: CounterTheme, text: string): string {
+	const thought = theme.fg("thinkingText", text);
+	return theme.italic ? theme.italic(thought) : thought;
 }

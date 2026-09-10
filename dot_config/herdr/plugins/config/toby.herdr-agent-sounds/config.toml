@@ -1,6 +1,7 @@
 # Sound pools for the local herdr-agent-sounds plugin.
 # Plugin source: dotfiles/dot_config/herdr-agent-sounds
-# Audio library: dotfiles/dot_config/herdr/sounds/library (committed)
+# Audio library: ~/.config/herdr/sounds/library — NOT committed (copyrighted,
+# public repo). Fetch per-machine: herdr-sounds-library Peon Peasant Acolyte
 #
 # Switch packs with `herdr-soundpack use <pack>`, which rewrites active_pack
 # below and reloads Herdr. Herdr's built-in [ui.sound] is disabled so these
@@ -14,7 +15,7 @@
 # reported by agents with dedicated blocker detection (Claude Code, Kimi),
 # so those pools are configured but currently silent here.
 
-active_pack = "wc2/peon"
+active_pack = "peon"
 
 
 # --- Orc Horde: grunty, the classic ------------------------------------

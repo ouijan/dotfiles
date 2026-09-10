@@ -1,0 +1,31 @@
+{
+  "providers": {
+    "ollama": {
+      "baseUrl": "https://ollama.tharris.cc/v1",
+      "api": "openai-completions",
+      "apiKey": "ollama",
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      },
+      "models": [
+        {
+          "id": "gemma4:latest",
+          "name": "Ollama - Gemma 4 8B",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 131072,
+          "maxTokens": 32768
+        },
+        {
+          "id": "gpt-oss:latest",
+          "name": "Ollama - GPT-OSS 20.9B",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 131072,
+          "maxTokens": 32768
+        }
+      ]
+    }
+  }
+}
