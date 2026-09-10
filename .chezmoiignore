@@ -1,6 +1,7 @@
 # Repository files - not dotfiles
 README.md
 AGENTS.md
+docs
 
 # pi runtime state - machine-specific, not dotfiles.
 # Only settings.json, mcp.json, keybindings.json, themes and extensions are managed.

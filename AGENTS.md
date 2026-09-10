@@ -1,7 +1,7 @@
 This is a chezmoi repo. It is used to manage the dotfiles of the user. The files in this repo are symlinked to the home directory.
 
 - When attempting to read, write or update anything in the ~/.config directory, instead edit the files here.
-- Managed config also includes `~/.pi/agent` (source: `dot_pi/agent`). Edit here, then `chezmoi apply`.
+- Managed config also includes `~/.pi/agent` (source: `dot_pi/private_agent`). Edit here, then `chezmoi apply`.
 
 ## chezmoi auto-commit
 
@@ -16,5 +16,5 @@ sweeping in every dirty file in the working tree. This is intentional and overri
 ## pi config
 
 - Runtime state (`auth.json`, `models-store.json`, `sessions/`, `npm/`, `trust.json`) is in `.chezmoiignore`.
-- `dot_pi/agent/settings.json` is rewritten by pi at runtime; run `chezmoi re-add ~/.pi/agent/settings.json` after changing settings in the TUI.
+- `dot_pi/private_agent/settings.json` is rewritten by pi at runtime; run `chezmoi re-add ~/.pi/agent/settings.json` after changing settings in the TUI.
 - pi packages are declared in `settings.json` `packages[]`; `pi install` restores them. Don't vendor package source.

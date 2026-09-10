@@ -12,7 +12,7 @@ pi-powerline-footer (queue system, stash, vibes, welcome overlay, bash mode).
    branch + dirty state, cwd. No decoration for its own sake.
 2. **Fast and quiet.** No async work on every render; git status cached and
    invalidated on file writes. Zero footprint when idle.
-3. **Owned, not installed.** Lives in `dot_pi/agent/extensions/weave/`,
+3. **Owned, not installed.** Lives in `dot_pi/private_agent/extensions/weave/`,
    versioned by chezmoi, applied with `chezmoi apply`. No npm publish, no
    `pi install`, no upstream churn.
 4. **One namespace for future customization.** New commands are `/weave-*`
@@ -97,7 +97,7 @@ From the grilling session (Q1–Q7):
 ## Architecture
 
 ```
-dot_pi/agent/extensions/weave/
+dot_pi/private_agent/extensions/weave/
   index.ts          # entry: wires modules, registers /weave command(s)
   footer/
     footer.ts       # setFooter component: layout, truncation, render
@@ -260,7 +260,7 @@ Design rules (Pragmatic Programmer: orthogonality + small modules):
 
 ### Phase 1 — footer MVP ✅ (implements Q1–Q7; dogfooding)
 
-Lives in `dot_pi/agent/extensions/weave/` (`index.ts`, `config.ts`,
+Lives in `dot_pi/private_agent/extensions/weave/` (`index.ts`, `config.ts`,
 `footer/{footer,segments,usage}.ts`, `lib/format.ts`). Typechecks clean;
 auto-discovered via `~/.pi/agent/extensions/*/index.ts`. Implements the
 `{ text, color }` contract, token|hex color resolver, `segments` blocks,
@@ -271,7 +271,7 @@ Omissions vs built-in footer (deliberate): `(auto)` compaction indicator and
 Dogfooding notes go here before phase 2.
 
 1. Scaffold `weave/` with entry + footer module; register in pi (extensions
-   dir auto-discovery already covers `dot_pi/agent/extensions/`— verify).
+   dir auto-discovery already covers `dot_pi/private_agent/extensions/`— verify).
 2. Config loader: read the `weave.footer` block (settings or `weave.json`,
    per open question), validate, fall back to built-in default layout.
 3. Layout engine: N lines × left/middle/right zones, Nerd Font separators,

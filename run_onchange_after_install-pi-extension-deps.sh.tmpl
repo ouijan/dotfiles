@@ -1,7 +1,7 @@
 #!/bin/sh
 # Reinstall pi extension dependencies when the manifest changes.
-# package.json hash: {{ include "dot_pi/agent/extensions/package.json" | sha256sum }}
-# package-lock.json hash: {{ include "dot_pi/agent/extensions/package-lock.json" | sha256sum }}
+# package.json hash: {{ include "dot_pi/private_agent/extensions/package.json" | sha256sum }}
+# package-lock.json hash: {{ include "dot_pi/private_agent/extensions/package-lock.json" | sha256sum }}
 set -eu
 
 if ! command -v npm >/dev/null 2>&1; then

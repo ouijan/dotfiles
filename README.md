@@ -39,7 +39,7 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 
 ```
 dot_config/           ~/.config/  (nvim, tmux, herdr, opencode, lazygit, ...)
-dot_pi/agent/         pi coding agent (settings, extensions, themes)
+dot_pi/private_agent/ pi coding agent (settings, extensions, themes)
 dot_zshrc             zsh + Oh My Zsh + p10k
 private_dot_local/bin CLI scripts (~/.local/bin)
 .chezmoitemplates/    per-OS package install scripts
