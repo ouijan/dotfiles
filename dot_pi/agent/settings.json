@@ -1,12 +1,14 @@
 {
-  "lastChangelogVersion": "0.84.4",
+  "lastChangelogVersion": "0.85.1",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5",
   "defaultThinkingLevel": "medium",
   "theme": "catppuccin",
-  "skills": ["~/.config/opencode/skills"],
+  "skills": [
+    "~/.config/opencode/skills"
+  ],
   "collapseChangelog": true,
-  "hideThinkingBlock": true,
+  "hideThinkingBlock": false,
   "showLastPrompt": true,
   "terminal": {
     "showTerminalProgress": true
@@ -36,15 +38,30 @@
     "footer": {
       "lines": [
         {
-          "left": ["model", "thinking"],
+          "left": [
+            "model",
+            "thinking"
+          ],
           "middle": [],
-          "right": ["context", "cost"]
+          "right": [
+            "context",
+            "cost"
+          ]
         },
         {
-          "left": ["cwd"],
-          "right": ["git"]
+          "left": [
+            "cwd"
+          ],
+          "right": [
+            "git"
+          ]
         },
-        { "middle": ["hindsight", "mcp"] }
+        {
+          "middle": [
+            "hindsight",
+            "mcp"
+          ]
+        }
       ],
       "segments": {
         "model": {

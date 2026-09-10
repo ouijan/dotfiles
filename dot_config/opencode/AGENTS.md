@@ -29,6 +29,31 @@
 - Don't use `any` type.
 - Don't use `| undefined` when declaring function arguments. Instead, use an optional argument or a default value.
 - Don't use `return undefined` if a simple `return` will suffice.
+- Indexed access is `T | undefined`. Narrow it before use — `const worker = workers[0]` must be followed by a guard, or wrapped in a helper that throws/returns a typed default. Never reach for `!` or `as` to silence it.
+- Don't use non-null assertions (`!`) or type assertions (`as T`) to defeat the compiler. Use a type guard, an early return, or validation at the boundary.
+- Rules are enforced by tooling, not vibes: Biome for lint/format, `tsc --noEmit` for types. Every repo runs `bun run check` (`bun run lint && bun run typecheck`) and it must exit 0 before a commit.
+
+#### Required tsconfig flags
+
+```jsonc
+"strict": true,
+"noUncheckedIndexedAccess": true,
+"exactOptionalPropertyTypes": true,
+"noImplicitOverride": true,
+"noImplicitReturns": true,
+"noFallthroughCasesInSwitch": true,
+"noPropertyAccessFromIndexSignature": true,
+"useUnknownInCatchVariables": true,
+"noUnusedLocals": true,
+"noUnusedParameters": true,
+"forceConsistentCasingInFileNames": true
+```
+
+#### Required Biome lint rules
+
+`suspicious/noExplicitAny`, `style/noNonNullAssertion`, `correctness/noUnusedVariables`, `correctness/noUnusedImports`, `suspicious/useAwait`, `nursery/noFloatingPromises`, `nursery/useExhaustiveSwitchCases`, and `complexity/noExcessiveCognitiveComplexity` (max 10) — all at `error`. Reference config: `~/code/github.com/ouijan/pragma/biome.json`.
+
+A suppression needs a reason: `// biome-ignore lint/<rule>: why`. No blanket file-level disables.
 
 ### Principle Repo
 

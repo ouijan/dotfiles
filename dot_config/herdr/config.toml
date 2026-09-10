@@ -81,6 +81,7 @@ tab_bar_right = [
   { type = "text", text = " " },
 ]
 
+status_indicators = "dots"
 [ui.sidebar.spaces]
 row_gap = 1
 rows = [
@@ -102,7 +103,7 @@ rows = [
 ]
 
 [ui.toast]
-delivery = "terminal"
+delivery = "herdr"
 
 # Agent-event sounds are owned by the toby.herdr-agent-sounds plugin, which
 # picks randomly from pools instead of Herdr's one-file-per-event limit.
