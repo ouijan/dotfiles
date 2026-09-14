@@ -1,0 +1,20 @@
+{
+  "enabledPlugins": {
+    "gitkraken-hooks@gitkraken": true
+  },
+  "extraKnownMarketplaces": {
+    "gitkraken": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/tobyharris/.claude/plugins/marketplaces/gitkraken"
+      }
+    }
+  },
+  "theme": "auto",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "includeCoAuthoredBy": false,
+  "hooks": {"SessionStart":[{"matcher":"*","hooks":[{"type":"command","command":"bash '/Users/tobyharris/.claude/hooks/herdr-agent-state.sh' session","timeout":10}]}]}
+}
