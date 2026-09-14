@@ -162,23 +162,38 @@ wm-reload() {
 alias oc-principle='HINDSIGHT_BANK_ID=principle opencode'
 alias oc-ouijan='HINDSIGHT_BANK_ID=coding opencode'
 
-# Auto-route memory identity by directory — cd into a work repo and plain
+# Principle checkout = anything under the org dir, or a T3 Code worktree
+# (~/.t3/worktrees/…) whose git common dir is the principle-theorem bare repo.
+_PT_BARE="$HOME/code/github.com/principle-theorem/principle-theorem/.bare"
+_in_principle_repo() {
+  case "$PWD" in
+    "$HOME/code/github.com/principle-theorem"*) return 0 ;;
+    "$HOME/.t3/worktrees/"*)
+      [[ "$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" == "$_PT_BARE" ]]
+      ;;
+    *) return 1 ;;
+  esac
+}
+
+# Auto-route work env by directory — cd into a work repo and plain
 # `pi` / `opencode` hit the work identity + bank; leave and it reverts to
 # personal defaults. Keeps work config out of shared repos entirely.
 # The aliases above remain as explicit overrides (their env wins at launch).
-_memory_identity_by_dir() {
-  case "$PWD" in
-    "$HOME/code/github.com/principle-theorem"*)
-      export HINDSIGHT_BANK_ID=principle
-      ;;
-    *)
-      unset HINDSIGHT_BANK_ID   # opencode falls back to opencode.json default (coding)
-      ;;
-  esac
+# NX_CACHE_DIRECTORY: one Nx task cache shared by every worktree instead of a
+# .nx/cache per checkout (safe: useLegacyCache is content-addressed, and Nx
+# prunes entries unused for a week). .nx/workspace-data stays per-worktree.
+_work_env_by_dir() {
+  if _in_principle_repo; then
+    export HINDSIGHT_BANK_ID=principle
+    export NX_CACHE_DIRECTORY="$HOME/.cache/nx/principle-theorem"
+  else
+    unset HINDSIGHT_BANK_ID     # opencode falls back to opencode.json default (coding)
+    unset NX_CACHE_DIRECTORY
+  fi
 }
 autoload -U add-zsh-hook
-add-zsh-hook chpwd _memory_identity_by_dir
-_memory_identity_by_dir
+add-zsh-hook chpwd _work_env_by_dir
+_work_env_by_dir
 
 # -----------------------------------------------
 # CLI tools
