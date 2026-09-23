@@ -10,6 +10,14 @@
       },
       "models": [
         {
+          "id": "hydrogen:latest",
+          "name": "Ollama - Hydrogen",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 131072,
+          "maxTokens": 32768
+        },
+        {
           "id": "gemma4:latest",
           "name": "Ollama - Gemma 4 8B",
           "reasoning": true,

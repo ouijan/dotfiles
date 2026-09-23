@@ -3,8 +3,8 @@
   "autoupdate": true,
   "plugin": [
     "opencode-antigravity-auth@latest",
-    "@ex-machina/opencode-anthropic-auth@1.8.0",
-    "oh-my-openagent@latest",
+    "@ex-machina/opencode-anthropic-auth@latest",
+    "opencode-openai-codex-auth@latest",
     "./plugins/herdr-agent-state.js",
     [
       "@vectorize-io/opencode-hindsight",
@@ -15,7 +15,7 @@
       }
     ]
   ],
-  "model": "github-copilot/claude-opus-4.8",
+  "model": "github-copilot/claude-opus-5.5",
   "mcp": {
     "fetch": {
       "enabled": true,
@@ -88,6 +88,83 @@
       "type": "remote",
       "url": "https://mcp.clickup.com/mcp",
       "oauth": {}
+    }
+  },
+  "provider": {
+    "9router": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "9router",
+      "options": {
+        "baseURL": "https://9router.tharris.cc/v1",
+        "apiKey": "{{ get . "router_api_key" | default "" }}"
+      },
+      "models": {
+        "tristam/hydrogen:latest": {
+          "name": "Hydrogen",
+          "modalities": {
+            "input": ["text"],
+            "output": ["text"]
+          }
+        },
+        "tristram/gpt-oss:latest": {
+          "name": "tristram/gpt-oss:latest",
+          "modalities": {
+            "input": ["text"],
+            "output": ["text"]
+          }
+        },
+        "tristram/gemma4:latest": {
+          "name": "tristram/gemma4:latest",
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          }
+        }
+      }
+    },
+    "openai": {
+      "options": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "textVerbosity": "medium",
+        "include": ["reasoning.encrypted_content"],
+        "store": false
+      },
+      "models": {
+        "gpt-5.2-codex": {
+          "name": "GPT 5.2 Codex (ChatGPT subscription)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -8,7 +8,7 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
     bws_access_token = {{ $bwsAccessToken | quote }}
 {{- /* Optional per-machine keys: preserved across `chezmoi init` if already
        present in the existing config; absent machines degrade gracefully. */}}
-{{- range $key := list "font" "context7_api_key" "github_token" "talos_ca" "talos_crt" "talos_key" }}
+{{- range $key := list "font" "context7_api_key" "github_token" "router_api_key" "talos_ca" "talos_crt" "talos_key" }}
 {{- if hasKey $ $key }}
     {{ $key }} = {{ index $ $key | quote }}
 {{- end }}
