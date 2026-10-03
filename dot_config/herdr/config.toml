@@ -61,14 +61,14 @@ command = "cloudmanic.herdr-plus.quick-actions"
 description = "herdr-plus: quick actions"
 
 [theme]
-# Catppuccin mocha, matching tmux status colors
-name = "catppuccin"
+# Tokyo Night, matching tmux status colors
+name = "tokyo-night"
 
 auto_switch = false
 [theme.custom]
-accent = "#89b4fa"
-green = "#a6e3a1"
-blue = "#89b4fa"
+accent = "#7aa2f7"
+green = "#9ece6a"
+blue = "#7aa2f7"
 
 [ui]
 agent_panel_sort = "priority"

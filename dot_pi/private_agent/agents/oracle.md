@@ -3,7 +3,7 @@ name: oracle
 aliases: advisor, reviewer
 description: Read-only high-reasoning consultant — hard debugging, architecture decisions, and review of plans, diffs, and proposed solutions. Never edits.
 tools: read, grep, find, ls, bash
-model: anthropic/claude-opus-5
+model: openai-codex/gpt-6-astra
 fallbackModels: anthropic/claude-opus-4-8
 thinking: high
 systemPromptMode: replace

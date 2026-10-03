@@ -2,12 +2,12 @@ return {
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = {
-			"catppuccin",
+			"tokyonight",
 			"nvim-tree/nvim-web-devicons",
 		},
 		opts = {
 			options = {
-				theme = "catppuccin",
+				theme = "tokyonight",
 				-- component_separators = { left = " ", right = " " },
 				-- component_separators = { left = "|", right = "|" },
 				-- component_separators = { left = "", right = "" },

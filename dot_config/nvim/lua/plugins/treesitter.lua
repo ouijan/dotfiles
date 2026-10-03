@@ -23,6 +23,7 @@ return {
 					"rust",
 					"toml",
 					"ron",
+					"wgsl",
 				},
 				sync_install = false,
 				highlight = { enable = true },

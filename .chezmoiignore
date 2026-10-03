@@ -2,9 +2,20 @@
 README.md
 AGENTS.md
 docs
+LICENSES
+
+# Agent skills: dot_agents/exact_skills is the full set, and every skills dir
+# below is exact_, so `chezmoi apply` deletes anything else. Run `chezmoi diff`
+# first to see what goes. These entries belong to the apps and are kept.
+.claude/skills/synced
+.claude/skills/synced/**
+.claude/skills/.trash
+.claude/skills/.trash/**
+.codex/skills/.system
+.codex/skills/.system/**
 
 # pi runtime state - machine-specific, not dotfiles.
-# Only settings.json, mcp.json, keybindings.json, themes and extensions are managed.
+# Only settings.json, mcp-adapter.json, keybindings.json, themes and extensions are managed.
 .pi/agent/extensions/node_modules
 # installed & overwritten by herdr's pi integration - not source-tracked
 .pi/agent/extensions/herdr-agent-state.ts
@@ -50,5 +61,11 @@ docs
 .config/aerospace
 .config/borders
 .local/bin/ouijan-cli
+{{- end }}
+
+{{- if not (lookPath "herdr") }}
+# herdr skill is generated from `herdr --skill`
+.agents/skills/herdr
+.claude/skills/herdr
 {{- end }}
 

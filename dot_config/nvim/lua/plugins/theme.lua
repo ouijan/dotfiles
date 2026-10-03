@@ -1,17 +1,17 @@
 return {
-	"catppuccin/nvim",
-	name = "catppuccin",
+	"folke/tokyonight.nvim",
+	name = "tokyonight",
 	lazy = false,
 	priority = 1000,
 	opts = {
-		auto_integrations = true,
-		transparent_background = true,
+		style = "night",
+		transparent = true,
 	},
 	config = function(_, opts)
-		require("catppuccin").setup(opts)
-		vim.cmd.colorscheme("catppuccin")
+		require("tokyonight").setup(opts)
+		vim.cmd.colorscheme("tokyonight")
 
-		local macchiato = require("catppuccin.palettes").get_palette("macchiato")
+		local palette = require("tokyonight.colors").setup(opts)
 
 		-- Diagnostic spans: flat underline plus a dim background tint.
 		--
@@ -20,7 +20,7 @@ return {
 		-- but herdr drops SGR 58 (underline colour), so the line always renders
 		-- in the text colour and is easy to miss. `bg` is the only channel that
 		-- reliably marks the span without touching the syntax colours.
-		-- Catppuccin's palette holds "#rrggbb" strings, not numbers.
+		-- Tokyo Night's palette holds "#rrggbb" strings, not numbers.
 		local function channels(hex)
 			local red, green, blue = hex:match("^#(%x%x)(%x%x)(%x%x)$")
 			return tonumber(red, 16), tonumber(green, 16), tonumber(blue, 16)
@@ -29,7 +29,7 @@ return {
 		-- Mix `hex` into the background by `amount` (0 = invisible, 1 = full).
 		local function tint(hex, amount)
 			local red, green, blue = channels(hex)
-			local base_red, base_green, base_blue = channels(macchiato.base)
+			local base_red, base_green, base_blue = channels(palette.bg)
 			local function mix(from, to)
 				return math.floor(from + (to - from) * amount)
 			end
@@ -42,10 +42,10 @@ return {
 		end
 
 		local severity_colours = {
-			DiagnosticUnderlineError = macchiato.red,
-			DiagnosticUnderlineWarn = macchiato.yellow,
-			DiagnosticUnderlineInfo = macchiato.sky,
-			DiagnosticUnderlineHint = macchiato.teal,
+			DiagnosticUnderlineError = palette.red,
+			DiagnosticUnderlineWarn = palette.yellow,
+			DiagnosticUnderlineInfo = palette.cyan,
+			DiagnosticUnderlineHint = palette.teal,
 		}
 		for group, colour in pairs(severity_colours) do
 			vim.api.nvim_set_hl(0, group, {
