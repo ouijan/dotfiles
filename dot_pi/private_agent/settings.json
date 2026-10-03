@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.99.1",
+  "lastChangelogVersion": "1.0.0",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5-5",
   "defaultThinkingLevel": "medium",
@@ -34,7 +34,9 @@
     "ollama/gemma4:latest",
     "ollama/gpt-oss:latest"
   ],
-  "extensions": ["-builtin:mcp"],
+  "extensions": [
+    "-builtin:mcp"
+  ],
   "subagents": {
     "disableBuiltins": true
   },
@@ -52,13 +54,25 @@
       "enabled": true,
       "lines": [
         {
-          "left": ["model", "thinking"],
+          "left": [
+            "model",
+            "thinking"
+          ],
           "middle": [],
-          "right": ["context", "cost"]
+          "right": [
+            "context",
+            "cost"
+          ]
         },
         {
-          "left": ["cwd", "git"],
-          "right": ["hindsight", "mcp"]
+          "left": [
+            "cwd",
+            "git"
+          ],
+          "right": [
+            "hindsight",
+            "mcp"
+          ]
         }
       ],
       "segments": {
