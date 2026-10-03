@@ -120,6 +120,8 @@ bindkey '^n' history-search-forward
 # -----------------------------------------------
 # Aliases
 # -----------------------------------------------
+alias tmi="tmux new -A -s $(basename $(pwd))"
+
 # Neovim aliases
 alias vim="nvim"
 alias vi="nvim"
