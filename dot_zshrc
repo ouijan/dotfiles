@@ -268,3 +268,11 @@ alias k="kubectl"
 
 # worktrunk shell integration (wt) - https://worktrunk.dev/config/#shell-integration
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
+# mise: per-project tool versions (https://mise.jdx.dev)
+eval "$(mise activate zsh)"
+
+# Claude Code version reported to Anthropic, which gates newer models on it.
+# Same value, two readers: pi-claude-auth and opencode-anthropic-auth.
+export ANTHROPIC_CLI_VERSION=2.1.282
+export ANTHROPIC_CLAUDE_CODE_VERSION=2.1.282

@@ -61,20 +61,20 @@ return {
 			end,
 			desc = "Code Actions",
 		},
-		-- {
-		-- 	"<leader>cs",
-		-- 	function()
-		-- 		require("fzf-lua").lsp_document_symbols()
-		-- 	end,
-		-- 	desc = "Code Symbols Document",
-		-- },
-		-- {
-		-- 	"<leader>cS",
-		-- 	function()
-		-- 		require("fzf-lua").lsp_live_workspace_symbols()
-		-- 	end,
-		-- 	desc = "Code Symbols Workspace",
-		-- },
+		{
+			"<leader>cs",
+			function()
+				require("fzf-lua").lsp_document_symbols()
+			end,
+			desc = "Code Symbols Document",
+		},
+		{
+			"<leader>cS",
+			function()
+				require("fzf-lua").lsp_live_workspace_symbols()
+			end,
+			desc = "Code Symbols Workspace",
+		},
 		{
 			"<leader>cd",
 			function()

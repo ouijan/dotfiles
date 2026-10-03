@@ -7,7 +7,7 @@ description: External discovery — web research, official docs, and open-source
 # exa/github servers are `lifecycle: lazy`, so a cold cache fails the whole launch
 # under the strict allowlist. The proxy connects lazily on first call instead.
 tools: read, write, mcp, mcpScript
-model: anthropic/claude-sonnet-5
+model: openai-codex/gpt-6-luna
 fallbackModels: anthropic/claude-sonnet-4-6
 thinking: medium
 systemPromptMode: replace

@@ -10,6 +10,7 @@ return {
 			ensure_installed = {
 				-- LSPs
 				"lua-language-server",
+				"wgsl-analyzer",
 				-- "gopls",
 				-- "vtsls",
 				-- "eslint-lsp",

@@ -3,7 +3,7 @@ name: worker
 aliases: coder, implementer, junior, delegate
 description: Scoped delegated implementer — executes a well-specified coding task faithfully, verifies, and reports. The orchestrator decides what; worker does it.
 tools: read, grep, find, ls, bash, edit, write, contact_supervisor
-model: anthropic/claude-opus-4.8
+model: anthropic/claude-opus-5-5
 fallbackModels: anthropic/claude-sonnet-5
 thinking: medium
 systemPromptMode: replace

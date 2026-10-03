@@ -3,7 +3,7 @@
   "autoupdate": true,
   "plugin": [
     "opencode-antigravity-auth@latest",
-    "@ex-machina/opencode-anthropic-auth@latest",
+    "@ex-machina/opencode-anthropic-auth",
     "opencode-openai-codex-auth@latest",
     "./plugins/herdr-agent-state.js",
     [
@@ -16,6 +16,7 @@
     ]
   ],
   "model": "github-copilot/claude-opus-5.5",
+  "subagent_depth": 1,
   "mcp": {
     "fetch": {
       "enabled": true,
@@ -38,14 +39,6 @@
       "headers": {
         "CONTEXT7_API_KEY": "{{ get . "context7_api_key" | default "" }}"
       }
-    },
-    "container-use": {
-      "enabled": false,
-      "type": "local",
-      "command": [
-        "container-use",
-        "stdio"
-      ]
     },
     "playwright": {
       "enabled": false,
@@ -77,18 +70,6 @@
         "GITHUB_PERSONAL_ACCESS_TOKEN": "{{ get . "github_token" | default "" }}"
       }
     },
-    "logrocket": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://mcp.logrocket.com/mcp?toolsets=all",
-      "oauth": {}
-    },
-    "clickup": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://mcp.clickup.com/mcp",
-      "oauth": {}
-    }
   },
   "provider": {
     "9router": {

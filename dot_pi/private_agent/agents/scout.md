@@ -3,12 +3,7 @@ name: scout
 aliases: explore
 description: Fast local repo/file discovery — answers "where is X, which file has Y, how does Z work here" and returns compressed context for handoff. Cheap; fire several in parallel.
 tools: read, grep, find, ls, bash, write
-# Pinned to the dated snapshot: pi-subagents 0.57.0 resolves the floating
-# `claude-haiku-4-5` alias to this id, then compares the two during
-# verification and marks every run failed (and excludes the model for 24h)
-# despite correct output. Matching both sides avoids it. Revert to the
-# floating alias once verification strips trailing date stamps upstream.
-model: anthropic/claude-haiku-4-5-20251001
+model: openai-codex/gpt-6-luna
 fallbackModels: anthropic/claude-sonnet-4-6
 thinking: low
 systemPromptMode: replace

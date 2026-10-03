@@ -1,10 +1,9 @@
 {
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "0.99.1",
   "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-5",
+  "defaultModel": "claude-opus-5-5",
   "defaultThinkingLevel": "medium",
-  "theme": "catppuccin",
-  "skills": ["~/.config/opencode/skills"],
+  "theme": "tokyo-night",
   "collapseChangelog": true,
   "hideThinkingBlock": false,
   "showLastPrompt": true,
@@ -22,23 +21,35 @@
     "anthropicExtraUsage": false
   },
   "enabledModels": [
-    "anthropic/claude-fable-5",
-    "anthropic/claude-opus-5",
-    "anthropic/claude-sonnet-5",
+    "anthropic/claude-fable-5-1",
+    "anthropic/claude-opus-5-5",
+    "anthropic/claude-sonnet-5-5",
     "anthropic/claude-haiku-4-5",
-    "openai-codex/gpt-5.6-luna",
-    "openai-codex/gpt-5.6-terra",
-    "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-6-astra",
+    "openai-codex/gpt-6-luna",
+    "openai-codex/gpt-6.1-sol",
+    "openai-codex/gpt-5.6-terra",
+    "openai-codex/gpt-6-luna",
     "ollama/hydrogen:latest",
     "ollama/gemma4:latest",
     "ollama/gpt-oss:latest"
   ],
+  "extensions": ["-builtin:mcp"],
   "subagents": {
     "disableBuiltins": true
   },
   "weave": {
+    "tools": {
+      "enabled": false
+    },
+    "roster": {
+      "enabled": false
+    },
+    "skills": {
+      "enabled": true
+    },
     "footer": {
+      "enabled": true,
       "lines": [
         {
           "left": ["model", "thinking"],
@@ -46,11 +57,8 @@
           "right": ["context", "cost"]
         },
         {
-          "left": ["cwd"],
-          "right": ["git"]
-        },
-        {
-          "middle": ["hindsight", "mcp"]
+          "left": ["cwd", "git"],
+          "right": ["hindsight", "mcp"]
         }
       ],
       "segments": {
@@ -88,4 +96,3 @@
     }
   }
 }
-

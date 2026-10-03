@@ -25,7 +25,7 @@ pi-powerline-footer (queue system, stash, vibes, welcome overlay, bash mode).
    style `left | middle | right` zones per line). Changing the footer means
    editing settings, not TypeScript.
 6. **Themed, not hardcoded.** Nerd Font glyph separators (Ghostty confirmed);
-   colors come from the active theme (`catppuccin`) via `theme.fg(...)`.
+   colors come from the active theme (`tokyo-night`) via `theme.fg(...)`.
 7. **On by default.** Active at startup; `/weave footer off` (or similar)
    restores the built-in footer instantly.
 
