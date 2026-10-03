@@ -4,8 +4,8 @@ theme = Tokyonight Night
 
 # Font Settings
 font-family = "MesloLGS NF"
-font-size = 15
-font-thicken = true
+font-size = 14
+# font-thicken = true
 # font-thicken-strength = 5
 
 # Transparency Settings
