@@ -1,8 +1,0 @@
-# angular/skills has no licence, so it can't be copied into this repo; fetched instead.
-# Pinned: bump the commit to update.
-[".agents/skills/angular-developer"]
-    type = "archive"
-    url = "https://github.com/angular/skills/archive/cfb0e3603dfacdda1cafd66d98a071459fa2187a.tar.gz"
-    exact = true
-    stripComponents = 2
-    include = ["*/angular-developer/**"]

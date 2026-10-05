@@ -1,0 +1,69 @@
+#!/bin/sh
+# Reinstall agent skills from scratch whenever this file changes: remove every
+# skill, then add the ones listed below. Skills land in ~/.agents/skills
+# (OpenCode, Codex, pi) with links in ~/.claude/skills. Claude's own
+# synced/ and .trash/ folders are left alone.
+#
+# Update between runs with `npx skills update -g -y`.
+# Flag notes: https://github.com/ouijan/skills#install
+{{- if lookPath "herdr" }}
+# herdr skill hash: {{ output "herdr" "--skill" | sha256sum }}
+{{- end }}
+set -eu
+
+AGENTS_SKILLS="${HOME}/.agents/skills"
+CLAUDE_SKILLS="${HOME}/.claude/skills"
+MISSING=""
+
+skills() {
+    npx -y skills "$@" </dev/null
+}
+
+# Keep going when a source fails so one bad repo doesn't leave the rest
+# uninstalled; the script fails at the end and chezmoi retries next apply.
+install_from() {
+    source="$1"
+    shift
+    skills add "$source" -g -y -a opencode claude-code --skill "$@" || true
+    record_missing "$@"
+}
+
+# The CLI can cancel and still exit 0, so check the files landed.
+record_missing() {
+    for name in "$@"; do
+        if [ ! -f "${CLAUDE_SKILLS}/${name}/SKILL.md" ]; then
+            MISSING="${MISSING} ${name}"
+        fi
+    done
+}
+
+install_herdr() {
+    if ! command -v herdr >/dev/null 2>&1; then
+        return
+    fi
+    mkdir -p "${AGENTS_SKILLS}/herdr"
+    herdr --skill >"${AGENTS_SKILLS}/herdr/SKILL.md"
+    ln -sfn "${AGENTS_SKILLS}/herdr" "${CLAUDE_SKILLS}/herdr"
+}
+
+if ! command -v npx >/dev/null 2>&1; then
+    echo "npx not found; skipping skills install" >&2
+    exit 0
+fi
+
+mkdir -p "${AGENTS_SKILLS}" "${CLAUDE_SKILLS}"
+skills remove -g --all
+
+install_from ouijan/skills \
+    orchestrate unslop writing-for-agents
+install_from mattpocock/skills \
+    grilling grill-with-docs domain-modeling research prototype \
+    to-spec to-tickets wayfinder setup-matt-pocock-skills
+install_from angular/skills \
+    angular-developer
+install_herdr
+
+if [ -n "${MISSING}" ]; then
+    echo "skills not installed:${MISSING}" >&2
+    exit 1
+fi
