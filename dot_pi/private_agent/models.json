@@ -1,5 +1,9 @@
 {
   "providers": {
+    "openai": {
+      "baseUrl": "https://cliproxy.tharris.cc/v1",
+      "apiKey": "$CLIPROXY_API_KEY"
+    },
     "ollama": {
       "baseUrl": "https://ollama.tharris.cc/v1",
       "api": "openai-completions",

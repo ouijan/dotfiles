@@ -75,9 +75,24 @@ fpath=(~/.zsh/completions $fpath)
 # Hermes agent's pinned runtime) shadows the nvm version for every project.
 export PATH="$HOME/.local/bin:$PATH"
 
+# Homebrew. Same rule: must come BEFORE oh-my-zsh, otherwise `brew shellenv`
+# re-prepends /opt/homebrew/bin over the nvm plugin's entry and Homebrew's node
+# (a prettierd dependency) shadows the nvm version in every shell.
+if [[ -f "/opt/homebrew/bin/brew" ]] then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Drop nvm entries inherited from the parent process (T3 Code, exec zsh, …).
+# If one is already in PATH, `nvm use` swaps it in place instead of prepending,
+# so whatever sat ahead of it (e.g. /opt/homebrew/bin) keeps winning. Clearing
+# them first forces nvm to prepend to the front.
+path=(${path:#$HOME/.nvm/*})
+
 # Switch node to the version in .nvmrc on cd. The nvm plugin is opt-in: without
 # this zstyle it never registers its chpwd hook and .nvmrc is silently ignored.
 zstyle ':omz:plugins:nvm' autoload yes
+# Quiet the "Found .nvmrc / Now using node" lines; they trip p10k instant prompt.
+zstyle ':omz:plugins:nvm' silent-autoload yes
 
 # Load Oh My Zsh + Powerlevel10k (oh-my-zsh runs compinit once for everything)
 source $ZSH/oh-my-zsh.sh
@@ -128,9 +143,9 @@ alias vi="nvim"
 
 # eza aliases (ls replacement)
 if command -v eza >/dev/null 2>&1; then
-	alias ls="eza -ha --icons"
-	alias ll="eza -lha --icons"
-	alias lt="eza -TL 2 --icons"
+	alias ls="eza -ha --icons=auto"
+	alias ll="eza -lha --icons=auto"
+	alias lt="eza -TL 2 --icons=auto"
 else
 	alias ll="ls -lha"
 fi
@@ -215,11 +230,6 @@ export HINDSIGHT_PROJECT_BANK_ID="coding"                     # shared bank acro
 # attributable via its hardcoded harness:pi tag only.
 export HINDSIGHT_AUTHOR="tharris"
 export HINDSIGHT_RETAIN_TAGS="source:opencode,author:${HINDSIGHT_AUTHOR}"
-
-# MacOS specific
-if [[ -f "/opt/homebrew/bin/brew" ]] then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
 
 # Arch specific
 # if [[ -f "/usr/bin/pacman" ]] then

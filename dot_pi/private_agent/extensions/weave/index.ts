@@ -32,7 +32,7 @@ import { registerAgentRoster } from "./roster/roster.ts";
 import { registerSkillDiscovery } from "./skills/discover.ts";
 import { AgentActivity } from "./footer/activity.ts";
 import { createFooterFactory, unknownSegmentNames } from "./footer/footer.ts";
-import { MCP_STATUS_EVENT, McpStatus } from "./footer/mcp.ts";
+import { McpStatus, readMcpSnapshot } from "./footer/mcp.ts";
 import type { SegmentFooterData } from "./footer/segments.ts";
 
 export default function weave(pi: ExtensionAPI) {
@@ -118,7 +118,7 @@ export default function weave(pi: ExtensionAPI) {
 		sources.activity.stop();
 		groups.setRunning(false);
 	});
-	pi.events.on(MCP_STATUS_EVENT, (snapshot: unknown) => sources.mcp.update(snapshot));
+	pi.on("session_shutdown", async () => sources.mcp.stop());
 
 	function enableFooter(ctx: ExtensionContext): void {
 		const config = loadWeaveConfig();
@@ -170,6 +170,7 @@ export default function weave(pi: ExtensionAPI) {
 		getTheme = () => ctx.ui.theme;
 		// Marks pi's collapsed label so the thinking patch can recognise it.
 		if (foldThinking) ctx.ui.setHiddenThinkingLabel(THINKING_LABEL);
+		sources.mcp.track(() => readMcpSnapshot(pi, ctx));
 		const config = loadWeaveConfig();
 		if (config.footer.enabled) enableFooter(ctx);
 	});

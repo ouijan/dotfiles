@@ -18,7 +18,7 @@
 - Prefer small, focused functions
 - Use intermediate variables for complex expressions
 - Keep case statements under 3 lines and 1 level of nesting. Break logic into separate methods if needed.
-- Don't use single letter variable names except for loop counters, and sort comparators
+- Avoid single letter variable names. Unless meaning is obvious and verbosity might hinder comprehension: short loop counters, comparators, and short closure parameters.
 
 ### Typescript Rules
 
@@ -28,3 +28,41 @@
 - Don't use `return undefined` if a simple `return` will suffice.
 - Indexed access is `T | undefined`. Narrow it before use — `const worker = workers[0]` must be followed by a guard, or wrapped in a helper that throws/returns a typed default. Never reach for `!` or `as` to silence it.
 - Don't use non-null assertions (`!`) or type assertions (`as T`) to defeat the compiler. Use a type guard, an early return, or validation at the boundary.
+
+## Diagrams
+
+Mermaid diagrams render as ASCII in a terminal pane about 80 columns wide.
+Anything wider wraps and breaks. Width is set by the widest row across the
+whole diagram, so:
+
+- Use `flowchart TD`, never `LR`.
+- Max 2 nodes side by side in any row, counting every subgraph and chain.
+- Each disconnected chain adds a column. Prefer one connected chain.
+- No subgraphs side by side. For before/after, draw two separate diagrams.
+- Node labels ≤ 16 characters. Edge labels ≤ 1 word, or none.
+- Put detail in prose below the diagram, not in labels.
+- Over ~8 nodes? Split into several small diagrams.
+
+Bad (5 columns, two subgraphs side by side):
+
+```mermaid
+flowchart TD
+  subgraph Before
+    A[Engine::new] --> B[pure-sky.hdr]
+    C[Scene.env] --> D[sun + ambient]
+  end
+  subgraph After
+    E[app attach] --> F[Skybox]
+    G[Scene::new] --> H[lights]
+    I[render] --> J[gather_lighting]
+  end
+```
+
+Good (one column, After only; Before gets its own diagram):
+
+```mermaid
+flowchart TD
+  A[Scene::new] -->|spawns| B[Skybox + lights]
+  B --> C[render]
+  C -->|queries| D[gather_lighting]
+```

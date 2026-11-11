@@ -115,7 +115,7 @@ const DEFAULT_SKILLS: WeaveSkillsConfig = {
 	dirs: [".claude/skills"],
 };
 
-function agentDir(): string {
+export function agentDir(): string {
 	return process.env.PI_CODING_AGENT_DIR ?? join(homedir(), ".pi", "agent");
 }
 

@@ -201,13 +201,13 @@ not code. Unknown `{names}` render literally so typos surface in the footer.
   `~/.pi/agent/hindsight.json[c]`) and only looked up when `{bank}` is present.
   Empty values collapse with their surrounding whitespace, so an unresolved
   bank never leaves a double space.
-- `mcp`: `{enabled}` `{connected}` `{disabled}` `{total}` `{failed}`
-  `{needsAuth}` `{tools}` `{resources}`, default `"🔌 {enabled} enabled"`.
-  Counts come from the structured snapshot pi-mcp-adapter publishes on the
-  shared event bus (`pi-mcp-adapter/status/v1`), not from parsing its prose
-  footer text; the segment hides until the first snapshot arrives and when no
-  servers are configured. It claims the adapter's `mcp` status key so the
-  `statuses` catch-all never duplicates it.
+- `mcp`: `{enabled}` `{connected}` `{disabled}` `{total}` `{tools}`, default
+  `"🔌 {enabled} enabled"`. Pi's built-in MCP publishes no status, so the
+  counts are polled every 2s: enabled/disabled from `~/.pi/agent/mcp.json`
+  (plus `.pi/mcp.json` in trusted projects), connected/tools from the
+  `mcp__<server>` tool namespaces registered once a server connects. Tools
+  are never unregistered, so a server that drops later still counts as
+  connected. The segment hides when no servers are configured.
 
 First custom segment type (proves the Q3-B instance model): target a single
 extension status by its `setStatus` key. Two spellings — inline sugar for the

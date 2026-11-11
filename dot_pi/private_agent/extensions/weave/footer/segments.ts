@@ -35,7 +35,7 @@ export interface SegmentContext {
 	claimedStatusKeys: ReadonlySet<string>;
 	/** Live agent streaming state (fed by agent_start/agent_end). */
 	activity: Pick<AgentActivity, "working" | "startedAt">;
-	/** Latest MCP snapshot (fed by the shared event bus). */
+	/** Latest MCP snapshot (polled from config and registered tools). */
 	mcp: Pick<McpStatus, "snapshot">;
 }
 
@@ -69,9 +69,7 @@ export const SEGMENT_DEFAULTS: Record<string, SegmentSettings> = {
 	thinking: { color: "dim" },
 	statuses: {},
 	hindsight: { color: "dim", status: "hindsight", format: "󰍛 {bank} {status}" },
-	// `status` is unused by the mcp segment itself; it claims the adapter's key
-	// so the `statuses` catch-all does not render the same info twice.
-	mcp: { color: "dim", status: "mcp", format: "🔌 {enabled} enabled" },
+	mcp: { color: "dim", format: "🔌 {enabled} enabled" },
 	llm: {
 		color: "accent",
 		frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],

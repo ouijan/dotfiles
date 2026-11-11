@@ -1,19 +1,17 @@
 {
-  "lastChangelogVersion": "1.0.0",
+  "lastChangelogVersion": "1.5.2",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5-5",
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "high",
   "theme": "tokyo-night",
   "collapseChangelog": true,
-  "hideThinkingBlock": false,
+  "hideThinkingBlock": true,
   "showLastPrompt": true,
   "terminal": {
     "showTerminalProgress": true
   },
   "packages": [
     "npm:pi-claude-auth",
-    "npm:pi-mcp-adapter",
-    "npm:@luxusai/pi-hindsight",
     "npm:pi-subagents",
     "npm:@juicesharp/rpiv-ask-user-question"
   ],
@@ -24,18 +22,13 @@
     "anthropic/claude-fable-5-1",
     "anthropic/claude-opus-5-5",
     "anthropic/claude-sonnet-5-5",
-    "anthropic/claude-haiku-4-5",
-    "openai-codex/gpt-6-astra",
-    "openai-codex/gpt-6-luna",
-    "openai-codex/gpt-6.1-sol",
-    "openai-codex/gpt-5.6-terra",
-    "openai-codex/gpt-6-luna",
+    "anthropic/claude-haiku-5-5",
     "ollama/hydrogen:latest",
     "ollama/gemma4:latest",
-    "ollama/gpt-oss:latest"
-  ],
-  "extensions": [
-    "-builtin:mcp"
+    "ollama/gpt-oss:latest",
+    "openai/gpt-6-astra",
+    "openai/gpt-6-luna",
+    "openai/gpt-6.1-sol"
   ],
   "subagents": {
     "disableBuiltins": true
@@ -108,5 +101,9 @@
         }
       }
     }
+  },
+  "deviceId": "cbe8b8cb-2f32-42b3-8b76-1377c7a63a15",
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.87.0"
   }
 }
