@@ -171,13 +171,8 @@ wm-reload() {
 	echo "aerospace + borders reloaded"
 }
 
-# AI Aliases — identity routing for memory backends.
-# hindsight:   HINDSIGHT_BANK_ID picks the bank (env wins over plugin options
-#              AND repo-level opencode.json — config layers replace, not merge).
-#              work → principle (hard wall), personal → coding (shared with pi).
-#              Author tag comes from HINDSIGHT_AUTHOR (see hindsight env below).
-alias oc-principle='HINDSIGHT_BANK_ID=principle opencode'
-alias oc-ouijan='HINDSIGHT_BANK_ID=coding opencode'
+# Hindsight bank routing (work → principle, personal → coding) lives in
+# ~/.hindsight/coding-agent.json, so it also applies to agents T3 Code starts.
 
 # Principle checkout = anything under the org dir, or a T3 Code worktree
 # (~/.t3/worktrees/…) whose git common dir is the principle-theorem bare repo.
@@ -192,19 +187,15 @@ _in_principle_repo() {
   esac
 }
 
-# Auto-route work env by directory — cd into a work repo and plain
-# `pi` / `opencode` hit the work identity + bank; leave and it reverts to
-# personal defaults. Keeps work config out of shared repos entirely.
-# The aliases above remain as explicit overrides (their env wins at launch).
+# Auto-route work env by directory — cd into a work repo to pick up work
+# settings; leave and it reverts. Keeps work config out of shared repos.
 # NX_CACHE_DIRECTORY: one Nx task cache shared by every worktree instead of a
 # .nx/cache per checkout (safe: useLegacyCache is content-addressed, and Nx
 # prunes entries unused for a week). .nx/workspace-data stays per-worktree.
 _work_env_by_dir() {
   if _in_principle_repo; then
-    export HINDSIGHT_BANK_ID=principle
     export NX_CACHE_DIRECTORY="$HOME/.cache/nx/principle-theorem"
   else
-    unset HINDSIGHT_BANK_ID     # opencode falls back to opencode.json default (coding)
     unset NX_CACHE_DIRECTORY
   fi
 }
@@ -218,18 +209,6 @@ _work_env_by_dir
 
 # Secrets pulled from Bitwarden by chezmoi into ~/.secrets.zsh
 [ -f ~/.secrets.zsh ] && source ~/.secrets.zsh
-
-# hindsight (memory — homelab k8s, see ouijan/homelab)
-export HINDSIGHT_API_URL="https://hindsight-api.tharris.cc"   # opencode plugin
-export HINDSIGHT_BASE_URL="https://hindsight-api.tharris.cc"  # pi-hindsight extension
-export HINDSIGHT_PROJECT_BANK_ID="coding"                     # shared bank across pi + opencode
-# Author attribution on every opencode retain — collaborators set their own
-# HINDSIGHT_AUTHOR. NB: this env var REPLACES any repo-level retainTags
-# (layers don't merge), so it must carry the full tag list.
-# pi-hindsight has no custom-tag config yet (upstream gap); pi memories are
-# attributable via its hardcoded harness:pi tag only.
-export HINDSIGHT_AUTHOR="tharris"
-export HINDSIGHT_RETAIN_TAGS="source:opencode,author:${HINDSIGHT_AUTHOR}"
 
 # Arch specific
 # if [[ -f "/usr/bin/pacman" ]] then
