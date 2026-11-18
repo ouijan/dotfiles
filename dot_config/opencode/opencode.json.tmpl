@@ -101,13 +101,13 @@
     "anthropic": {
       "options": {
         "baseURL": "https://cliproxy.tharris.cc/v1",
-        "apiKey": "{env:CLIPROXY_API_KEY}"
+        "apiKey": "{file:{{ .chezmoi.homeDir }}/.config/cliproxy/api-key}"
       }
     },
     "openai": {
       "options": {
         "baseURL": "https://cliproxy.tharris.cc/v1",
-        "apiKey": "{env:CLIPROXY_API_KEY}",
+        "apiKey": "{file:{{ .chezmoi.homeDir }}/.config/cliproxy/api-key}",
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",

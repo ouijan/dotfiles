@@ -2,7 +2,7 @@
   "providers": {
     "openai": {
       "baseUrl": "https://cliproxy.tharris.cc/v1",
-      "apiKey": "$CLIPROXY_API_KEY"
+      "apiKey": "!cat ~/.config/cliproxy/api-key"
     },
     "ollama": {
       "baseUrl": "https://ollama.tharris.cc/v1",
