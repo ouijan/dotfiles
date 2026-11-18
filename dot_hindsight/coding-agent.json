@@ -1,0 +1,11 @@
+{
+  "serverMode": "self-hosted",
+  "apiUrl": "https://hindsight-api.tharris.cc",
+  "bankId": "coding",
+  "mapPathToBank": {
+    "/Users/tobyharris/code/github.com/principle-theorem": "principle"
+  },
+  "retainTags": [
+    "author:tharris"
+  ]
+}
