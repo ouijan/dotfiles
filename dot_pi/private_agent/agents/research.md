@@ -15,7 +15,6 @@ tools:
   - mcp:github/list_commits
   - mcp:github/search_repositories
 model: openai-codex/gpt-6-luna
-fallbackModels: anthropic/claude-sonnet-4-6
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true
