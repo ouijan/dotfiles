@@ -105,6 +105,9 @@
   },
   "deviceId": "cbe8b8cb-2f32-42b3-8b76-1377c7a63a15",
   "extensionChangelogVersions": {
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.87.0"
-  }
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.89.0"
+  },
+  "extensions": [
+    "/Users/tobyharris/.hindsight/coding-agents/dist/pi.js"
+  ]
 }

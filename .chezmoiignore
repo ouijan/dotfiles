@@ -14,6 +14,9 @@ docs
 .pi/agent/extensions/node_modules
 # installed & overwritten by herdr's pi integration - not source-tracked
 .pi/agent/extensions/herdr-agent-state.ts
+# installed by `npx @vectorize-io/hindsight-coding-agents install pi`
+.pi/agent/skills/hindsight-coding-agent
+.pi/agent/skills/hindsight-coding-agent/**
 .pi/agent/auth.json
 .pi/agent/trust.json
 .pi/agent/models-store.json
